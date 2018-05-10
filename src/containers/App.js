@@ -13,7 +13,7 @@ class App extends Component {
 		return (
 			<Provider store={store}>
 				<AppContainer>
-
+					{this.props.children}
 				</AppContainer>
 			</Provider>
 		);

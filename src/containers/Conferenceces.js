@@ -14,7 +14,7 @@ class Home extends Component {
 						<br/>
 						<br/>
 						<Jumbotron>
-							<h1>Ehhhhh!</h1>
+							<h1>Conferences!</h1>
 						</Jumbotron>
 					</Col>
 				</Row>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Row, Col, Jumbotron} from 'react-bootstrap';
 
-class Home extends Component {
+class Admin extends Component {
 	static propTypes = {
 	};
 
@@ -14,7 +14,7 @@ class Home extends Component {
 						<br/>
 						<br/>
 						<Jumbotron>
-							<h1>Ehhhhh!</h1>
+							<h1>Admin!</h1>
 						</Jumbotron>
 					</Col>
 				</Row>
@@ -23,4 +23,4 @@ class Home extends Component {
 	}
 }
 
-export default Home;
+export default Admin;

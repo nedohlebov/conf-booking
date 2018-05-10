@@ -1,0 +1,53 @@
+@import 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css';
+
+html,
+body,
+#root {
+	height: 100%;
+}
+
+#root {
+	display: flex;
+	flex-direction: column;
+}
+
+.navbar-header {
+	display: inline-block;
+}
+
+.logo {
+	background-color: darkgoldenrod;
+	font-size: 20px;
+	margin-left: 30px;
+	padding: 20px 50px;
+}
+
+.cb-logo-link {
+	text-decoration: none;
+}
+
+.navbar-default .navbar-brand,
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:active {
+	color: #fff;
+}
+
+.navbar-nav > li {
+	float: left;
+}
+
+.navbar-nav {
+	float: right;
+}
+
+.main-content {
+	flex-grow: 1;
+}
+
+@media screen and (max-width: 768px) {
+	.logo {
+		font-size: 14px;
+		margin-left: 10px;
+		padding: 20px 10px;
+	}
+}
