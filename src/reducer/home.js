@@ -13,7 +13,7 @@ export default (state = defaultState, action) => {
 			return state.set('loading', true);
 
 		case INIT + CONF + SUCCESS:
-			return state.merge(response).set('loading', false);
+			return state.merge({confs: response}).set('loading', false);
 
 	}
 
