@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Row, Col, Jumbotron} from 'react-bootstrap';
+import {init} from '../AC/home';
+import {connect} from 'react-redux';
 
-class Home extends Component {
+class Conference extends Component {
 	static propTypes = {
+
 	};
 
 	render() {
+		console.log(this.props);
+
 		return (
 			<Grid>
 				<Row>
@@ -23,4 +28,4 @@ class Home extends Component {
 	}
 }
 
-export default Home;
+export default Conference;

@@ -1,19 +1,23 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { setRoute } from '../AC/route';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Navbar, Glyphicon, Nav, NavItem, Grid, Row, Col } from 'react-bootstrap';
 
-class Header extends Component {
-	static propTypes = {
-		appRouteName: PropTypes.string.isRequired,
-		setRoute: PropTypes.func.isRequired,
-	};
+function getHeading(appRouteName) {
+	let heading = 'Conferences Booking';
 
+	if (appRouteName.indexOf('/admin') !== -1) {
+		heading = 'Admin Panel';
+	} else if(appRouteName.indexOf('/conference/:id') !== -1) {
+		heading = 'Conference Timetable';
+	}
+
+	return heading;
+}
+
+class Header extends Component {
 	componentDidUpdate () {
 		const { appRouteName } = this.props;
-		document.title = appRouteName;
+		document.title = getHeading(appRouteName);
 	}
 
 	render() {
@@ -30,7 +34,6 @@ class Header extends Component {
 						</Navbar.Brand>
 					</Navbar.Header>
 					<Nav pullRight className="navbar-menu">
-						<NavItem className="admin-panel" href="/conferences-list"><small><Glyphicon glyph="th-list" /></small>{' '}Conferences</NavItem>
 						<NavItem className="admin-panel" href="/admin"><small><Glyphicon glyph="user" /></small>{' '}Admin</NavItem>
 					</Nav>
 				</Navbar>
@@ -38,7 +41,7 @@ class Header extends Component {
 					<Row>
 						<Col md={12}>
 							<h1 className="cb-page-title">
-								{appRouteName}
+								{getHeading(appRouteName)}
 							</h1>
 						</Col>
 					</Row>
@@ -48,12 +51,4 @@ class Header extends Component {
 	}
 }
 
-export default connect(
-	(state) => {
-		return {
-			appRouteName: state.header.get('appRouteName')
-		};
-	}, {
-		setRoute
-	}
-)(Header);
+export default Header;
