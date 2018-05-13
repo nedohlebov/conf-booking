@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Grid, Row, Col, Jumbotron} from 'react-bootstrap';
+import { Grid, Row, Col, Nav} from 'react-bootstrap';
 import { init } from '../AC/home';
 import Loading from '../components/Loading';
-import Conference from '../components/Conference';
+import ConferenceLink from '../components/ConferenceLink';
 
 class Home extends Component {
 	static propTypes = {
@@ -24,13 +24,15 @@ class Home extends Component {
 			return <Loading />;
 		}
 
-		const conferences = confs.valueSeq().isEmpty() ? null : confs.valueSeq().map(conf => <Conference key={conf.get('id')} id={conf.get('id')} title={conf.get('title')}/>);
+		const conferences = confs.valueSeq().isEmpty() ? null : confs.valueSeq().map(conf => <ConferenceLink key={conf.get('id')} id={conf.get('id')} title={conf.get('title')}/>);
 
 		return (
 			<Grid>
 				<Row>
 					<Col xs={12} md={12}>
-						{conferences}
+						<Nav>
+							{conferences}
+						</Nav>
 					</Col>
 				</Row>
 			</Grid>

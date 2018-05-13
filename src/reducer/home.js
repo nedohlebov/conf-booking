@@ -1,4 +1,4 @@
-import { Map, List } from 'immutable';
+import { Map } from 'immutable';
 import { INIT, START, SUCCESS, CONF } from '../constants/index'
 const defaultState = Map({
 	'loading': false,
