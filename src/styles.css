@@ -43,6 +43,10 @@ body,
 	flex-grow: 1;
 }
 
+.timetable-container {
+	margin-top: 20px;
+}
+
 @media screen and (max-width: 768px) {
 	.logo {
 		font-size: 14px;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Row, Col, Jumbotron} from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
 import {initConference, loadConferenceTimetable} from '../AC/conference';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
@@ -12,7 +12,8 @@ class Conference extends Component {
 		loadConferenceTimetable: PropTypes.func.isRequired,
 		timetable: PropTypes.object.isRequired,
 		loading: PropTypes.bool.isRequired,
-		dateError: PropTypes.bool.isRequired,
+		dateError: PropTypes.string.isRequired,
+		confId: PropTypes.number.isRequired
 	};
 
 	componentDidMount() {
@@ -24,39 +25,40 @@ class Conference extends Component {
 	}
 
 	dateSelectOnChangeHandler (...data) {
-		const currentConfId = parseInt(this.props.match.params.id);
+		const currentConfId = this.confId;
 		const today = new Date();
 		const todayF = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 		const pickerDate = new Date(data[0]);
 		const pickeDateF = new Date(pickerDate.getFullYear(), pickerDate.getMonth(), pickerDate.getDate());
 		const pickerKey = (('0' + (pickerDate.getMonth() + 1)).slice(-2)).toString() + pickerDate.getDate().toString() + pickerDate.getFullYear().toString();
 		if (pickeDateF < todayF) {
-			this.props.loadConferenceTimetable('less');
-			timetable = 'Нельзя просматривать или резервировать на прошедшую дату.';
+			this.loadConferenceTimetable('less');
 		} else if ((pickeDateF - todayF) / (1000 * 60 *60 * 24) > 21) {
-			this.props.loadConferenceTimetable('more');
-			timetable = 'Нельзя просматривать или резервировать больше чем на 3 недели.'
+			this.loadConferenceTimetable('more');
 		} else {
-			this.props.loadConferenceTimetable(null, currentConfId, pickerDate);
+			this.loadConferenceTimetable(null, currentConfId, pickerKey);
 		}
 
 	}
 
 	render() {
-		const { loading, timetable, dateError } = this.props;
-
+		const { loading, timetable, dateError, confId } = this.props;
 
 		if (loading) {
 			return <Loading />;
 		}
 
+		let timetableCode = '';
+
 		if (dateError === 'less') {
-
+			timetableCode = 'Нельзя просматривать или резервировать на прошедшую дату.';
 		} else if (dateError === 'more') {
-
+			timetableCode = 'Нельзя просматривать или резервировать больше чем на 3 недели.';
 		} else {
-
+			timetableCode = '';
 		}
+
+		console.log(this.props);
 
 		return (
 			<Grid>
@@ -64,11 +66,15 @@ class Conference extends Component {
 					<Col xs={12} md={4} lg={4}>
 						<DatePicker
 							onChange = {this.dateSelectOnChangeHandler}
+							confId = { confId }
+							loadConferenceTimetable = {this.props.loadConferenceTimetable}
 						/>
 					</Col>
 				</Row>
-				<Row>
-					{timetableCode}
+				<Row className={'timetable-container'}>
+					<Col xs={12}>
+						{timetableCode}
+					</Col>
 				</Row>
 			</Grid>
 		);
@@ -80,7 +86,8 @@ export default connect(
 		return {
 			timetable: state.conference.get('timetable'),
 			loading: state.conference.get('loading'),
-			dateError: state.conference.get('dateError')
+			dateError: state.conference.get('dateError'),
+			confId: state.conference.get('confId')
 		}
 	}, {
 		initConference,
