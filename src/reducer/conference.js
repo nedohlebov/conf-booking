@@ -11,9 +11,6 @@ const defaultState = Map({
 
 export default (state = defaultState, action) => {
 	const { type, payload, response } = action;
-
-	console.log('state', state);
-
 	switch (type) {
 		case INIT + TIMETABLE + START:
 			return state.set('loading', true).set('confId', payload.id).set('dateId', payload.todayKey).set('confs', state.get('confs'));

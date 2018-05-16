@@ -5,6 +5,7 @@ import {initConference, loadConferenceTimetable} from '../AC/conference';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
 import DatePicker from 'react-bootstrap-date-picker';
+import moment from 'moment';
 
 class Conference extends Component {
 	static propTypes = {
@@ -21,7 +22,6 @@ class Conference extends Component {
 	componentDidMount() {
 		const today = new Date();
 		const todayKey =  today.getFullYear().toString() + '-' + (('0' + (today.getMonth() + 1)).slice(-2)).toString() + '-'+ today.getDate().toString();
-		console.log('todayKey', todayKey);
 		const currentConfId = parseInt(this.props.match.params.id);
 
 		this.props.initConference(currentConfId, todayKey);
@@ -33,7 +33,7 @@ class Conference extends Component {
 		const todayF = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 		const pickerDate = new Date(data[0]);
 		const pickeDateF = new Date(pickerDate.getFullYear(), pickerDate.getMonth(), pickerDate.getDate());
-		const pickerKey = pickerDate.getFullYear().toString() + '-' + (('0' + (pickerDate.getMonth() + 1)).slice(-2)).toString() + '-' + pickerDate.getDate().toString();
+		const pickerKey = data[0].slice(0, 10);
 		if (pickeDateF < todayF) {
 			this.loadConferenceTimetable('less');
 		} else if ((pickeDateF - todayF) / (1000 * 60 *60 * 24) > 21) {
@@ -51,39 +51,29 @@ class Conference extends Component {
 			return <Loading />;
 		}
 
-		console.log('confs', confs);
-
 		let timetableCode = '';
-		console.log(this.props);
 
 		if (dateError === 'less') {
 			timetableCode = 'Нельзя просматривать или резервировать на прошедшую дату.';
 		} else if (dateError === 'more') {
 			timetableCode = 'Нельзя просматривать или резервировать больше чем на 3 недели.';
 		} else {
+			const time = 9*60;
 			timetableCode = timetable.valueSeq().map((key, value) =>
-				<tr key={value}>
+				<tr key={value} className={(key === 'free' ? 'free' : 'busy')}>
 					<td>
 						<Checkbox name={"timetable[" + value + "]"}></Checkbox>
 					</td>
-					<td>
-						тут время
+					<td className={'time'}>
+						{parseInt((time + value * 15) / 60) + ':' + (('0' + ((time + value * 15) % 60)).slice(-2)) + ' - ' + parseInt((time + value * 15 + 15) / 60) + ':' + (('0' + ((time + value * 15 + 15) % 60) ).slice(-2))}
+
 					</td>
 					<td>
-						{key}
+						{(key === 'free' ? '' : 'ffff')}
 					</td>
 				</tr>
 			);
 		}
-
-		//const pickerDate = new Date(dateId).toISOString();
-		//console.log(pickerDate.getDate() + '/' +  ('0' + (pickerDate.getMonth() + 1)).slice(-2) + '/' + pickerDate.getFullYear());
-		const v = new Date(dateId).toISOString();
-		//console.log(new Date(dateId.toString()));
-		const p = new Date().toISOString();
-		console.log(p);
-		//const v = new Date(dateId).toISOString();
-		//console.log(v);
 
 		return (
 			<Grid>
@@ -92,14 +82,14 @@ class Conference extends Component {
 						<DatePicker
 							onChange = {this.dateSelectOnChangeHandler}
 							confId = { confId }
-							value={ p }
+							value={ dateId }
 							loadConferenceTimetable = {this.props.loadConferenceTimetable}
 						/>
 					</Col>
 				</Row>
 				<Row className={'timetable-container'}>
 					<Col xs={12}>
-						<Table striped bordered condensed hover>
+						<Table striped bordered condensed hover className={'timetable'}>
 							<tbody>
 								{timetableCode}
 							</tbody>

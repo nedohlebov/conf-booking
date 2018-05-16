@@ -23,7 +23,6 @@ class Home extends Component {
 		if (loading) {
 			return <Loading />;
 		}
-		console.log('confs', confs);
 		const conferences = confs.valueSeq().isEmpty() ? null : confs.valueSeq().map(conf => <ConferenceLink key={conf.get('id')} id={conf.get('id')} title={conf.get('title')}/>);
 
 		return (

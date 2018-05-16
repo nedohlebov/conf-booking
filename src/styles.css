@@ -47,6 +47,42 @@ body,
 	margin-top: 20px;
 }
 
+.timetable td:first-child {
+	width: 40px;
+}
+
+.timetable td {
+	vertical-align: middle!important;
+	line-height: 1!important;
+	padding: 0 5px!important;
+}
+
+.timetable .time {
+	text-align: center;
+	width: 150px;
+}
+
+/*.free {*/
+	/*background-color: #5cb85c;*/
+/*}*/
+
+.busy:nth-of-type(odd) {
+	background-color: #d9534f!important;
+}
+
+.busy {
+	background-color: #bc4441!important;
+}
+
+.busy td {
+	color: white;
+}
+
+.timetable .checkbox input[type=checkbox] {
+	margin-left: -10px;
+	margin-top: 5px;
+}
+
 @media screen and (max-width: 768px) {
 	.logo {
 		font-size: 14px;

@@ -10,7 +10,7 @@
     "bootstrap-sass": "^3.3.7",
     "prop-types": "^15.6.1",
     "react-bootstrap": "^0.32.1",
-    "react-bootstrap-date-picker": "github:pushtell/react-bootstrap-date-picker#f622dc8872dd180324ba5d3c295d009848f5814b"
+    "react-bootstrap-date-picker": "^5.1.0"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -18,13 +18,15 @@
     "immutable": "^3.8.2",
     "react": "^16.3.2",
     "react-bootstrap": "^0.32.1",
-    "react-bootstrap-date-picker": "github:pushtell/react-bootstrap-date-picker#f622dc8872dd180324ba5d3c295d009848f5814b",
+    "react-bootstrap-date-picker": "^5.1.0",
     "react-dom": "^16.3.2",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.4",
     "redux": "^4.0.0",
     "redux-thunk": "^2.2.0",
+    "react-moment": "^0.7.0",
+    "moment-timezone": "^0.5.17"
   },
   "scripts": {
     "start": "react-scripts start",
