@@ -1,11 +1,11 @@
 import React from 'react';
-import { NavItem } from 'react-bootstrap';
+import { ListGroupItem } from 'react-bootstrap';
 
 const conferenceLink = (props) => {
 	return (
-		<NavItem href={`/conference/${props.id}`}>
+		<ListGroupItem href={`/conference/${props.id}`}>
 			{ props.title }
-		</NavItem>
+		</ListGroupItem>
 	);
 };
 

@@ -4,30 +4,29 @@ const defaultState = Map({
 	'loading': false,
 	'dateError': '',
 	'confId': 0,
-	'timetable': Map({})
+	'timetable': Map({}),
+	'confs': Map({})
 });
 
 export default (state = defaultState, action) => {
 	const { type, payload, response } = action;
-	console.log(TIMETABLE + ERROR);
-	console.log(type);
+
+	console.log('state', state);
 
 	switch (type) {
 		case INIT + TIMETABLE + START:
-			return state.set('loading', true).set('confId', payload.id);
+			return state.set('loading', true).set('confId', payload.id).set('confs', state.get('confs'));
 
 		case INIT + TIMETABLE + SUCCESS:
-			const timetable = {};
+			const timetable = state.get('timetable') || {};
 			timetable[payload.id] = response;
-			console.log(timetable);
-			return state.merge(timetable).set('loading', false);
+			return state.merge({timetable: timetable}).set('loading', false);
 
 		case TIMETABLE + ERROR:
-			console.log('reducer');
 			return state.set('dateError', payload.errorCode);
 
 		case LOAD + TIMETABLE + START:
-			return state.set('dateError', false);
+			return state.set('dateError', '').set('loading', true);
 
 	}
 

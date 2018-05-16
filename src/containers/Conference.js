@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Row, Col } from 'react-bootstrap';
+import { Grid, Row, Col, Table, Checkbox } from 'react-bootstrap';
 import {initConference, loadConferenceTimetable} from '../AC/conference';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
@@ -13,7 +13,8 @@ class Conference extends Component {
 		timetable: PropTypes.object.isRequired,
 		loading: PropTypes.bool.isRequired,
 		dateError: PropTypes.string.isRequired,
-		confId: PropTypes.number.isRequired
+		confId: PropTypes.number.isRequired,
+		confs: PropTypes.object.isRequired
 	};
 
 	componentDidMount() {
@@ -42,7 +43,7 @@ class Conference extends Component {
 	}
 
 	render() {
-		const { loading, timetable, dateError, confId } = this.props;
+		const { loading, timetable, dateError, confId, confs } = this.props;
 
 		if (loading) {
 			return <Loading />;
@@ -55,10 +56,25 @@ class Conference extends Component {
 		} else if (dateError === 'more') {
 			timetableCode = 'Нельзя просматривать или резервировать больше чем на 3 недели.';
 		} else {
-			timetableCode = '';
+			console.log('timetable', timetable);
+			timetableCode = timetable.valueSeq().map(date => {
+				console.log(date);
+			});
+			//timetableCode = timetable.valueSeq().map(date => <tr colspan="3" key={date}>{date}</tr> + date.map(id =>
+			//		<tr key={id}>
+			//			<td>
+			//				<Checkbox name="timetable"></Checkbox>
+			//			</td>
+			//			<td>
+			//				{id}
+			//			</td>
+			//			<td>
+			//			</td>
+			//		</tr>
+			//	));
 		}
 
-		console.log(this.props);
+
 
 		return (
 			<Grid>
@@ -73,7 +89,9 @@ class Conference extends Component {
 				</Row>
 				<Row className={'timetable-container'}>
 					<Col xs={12}>
-						{timetableCode}
+						<Table striped bordered condensed hover>
+							{timetableCode}
+						</Table>
 					</Col>
 				</Row>
 			</Grid>
@@ -87,7 +105,8 @@ export default connect(
 			timetable: state.conference.get('timetable'),
 			loading: state.conference.get('loading'),
 			dateError: state.conference.get('dateError'),
-			confId: state.conference.get('confId')
+			confId: state.conference.get('confId'),
+			confs: state.home.get('confs')
 		}
 	}, {
 		initConference,
