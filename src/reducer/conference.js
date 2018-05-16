@@ -1,11 +1,12 @@
-import { Map } from 'immutable';
+import { Map, List } from 'immutable';
 import { INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD } from '../constants/index'
 const defaultState = Map({
 	'loading': false,
 	'dateError': '',
 	'confId': 0,
-	'timetable': Map({}),
-	'confs': Map({})
+	'timetable': Map(),
+	'confs': Map({}),
+	'dateId': ''
 });
 
 export default (state = defaultState, action) => {
@@ -15,12 +16,10 @@ export default (state = defaultState, action) => {
 
 	switch (type) {
 		case INIT + TIMETABLE + START:
-			return state.set('loading', true).set('confId', payload.id).set('confs', state.get('confs'));
+			return state.set('loading', true).set('confId', payload.id).set('dateId', payload.todayKey).set('confs', state.get('confs'));
 
 		case INIT + TIMETABLE + SUCCESS:
-			const timetable = state.get('timetable') || {};
-			timetable[payload.id] = response;
-			return state.merge({timetable: timetable}).set('loading', false);
+			return state.merge({timetable: response}).set('loading', false).set('dateId', payload.id);
 
 		case TIMETABLE + ERROR:
 			return state.set('dateError', payload.errorCode);

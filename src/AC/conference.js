@@ -1,4 +1,4 @@
-import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD} from '../constants/index';
+import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF} from '../constants/index';
 import axios from 'axios';
 
 export function initConference(currentConfId, todayKey) {
@@ -7,9 +7,20 @@ export function initConference(currentConfId, todayKey) {
 		dispatch({
 			type: INIT + TIMETABLE + START,
 			payload: {
-				id: currentConfId
+				id: currentConfId,
+				todayKey
 			}
 		});
+
+		axios.get( 'https://conf-booking.firebaseio.com/confs.json' )
+			.then( response => {
+				dispatch({
+					type: INIT + CONF + SUCCESS,
+					response: {
+						...response.data,
+					}
+				});
+			});
 
 		axios.get( 'https://conf-booking.firebaseio.com/timetables/' + currentConfId + '/' + todayKey + '/.json' )
 			.then( response => {
