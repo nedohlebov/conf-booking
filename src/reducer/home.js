@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map, fromJS } from 'immutable';
 import { INIT, START, SUCCESS, CONF } from '../constants/index'
 const defaultState = Map({
 	'loading': false,
@@ -10,10 +10,13 @@ export default (state = defaultState, action) => {
 
 	switch (type) {
 		case INIT + CONF + START:
-			return state.set('loading', true);
+			return state
+				.set('loading', true);
 
 		case INIT + CONF + SUCCESS:
-			return state.merge({'confs': response}).set('loading', false);
+			return state
+				.merge(fromJS({'confs': response}))
+				.set('loading', false);
 
 	}
 

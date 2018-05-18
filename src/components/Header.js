@@ -2,22 +2,20 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar, Glyphicon, Nav, NavItem, Grid, Row, Col } from 'react-bootstrap';
 
-function getHeading(appRouteName) {
-	let heading = 'Conferences Booking';
+class Header extends Component {
+	getHeading = (appRouteName) => {
+		if (appRouteName.indexOf('/admin') !== -1) {
+			return 'Admin Panel';
+		} else if(appRouteName.indexOf('/conference/:id') !== -1) {
+			return 'Conference Timetable';
+		}
 
-	if (appRouteName.indexOf('/admin') !== -1) {
-		heading = 'Admin Panel';
-	} else if(appRouteName.indexOf('/conference/:id') !== -1) {
-		heading = 'Conference Timetable';
+		return 'Conferences Booking';
 	}
 
-	return heading;
-}
-
-class Header extends Component {
 	componentDidUpdate () {
 		const { appRouteName } = this.props;
-		document.title = getHeading(appRouteName);
+		document.title = this.getHeading(appRouteName);
 	}
 
 	render() {
@@ -41,7 +39,7 @@ class Header extends Component {
 					<Row>
 						<Col md={12}>
 							<h1 className="cb-page-title">
-								{getHeading(appRouteName)}
+								{this.getHeading(appRouteName)}
 							</h1>
 						</Col>
 					</Row>

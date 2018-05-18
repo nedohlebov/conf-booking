@@ -17,20 +17,30 @@ class Home extends Component {
 		this.props.init();
 	}
 
+	getConferences = () => {
+		const { confs } = this.props;
+
+		if (!confs.valueSeq().isEmpty()) {
+			return confs.valueSeq().map(conf => <ConferenceLink key={conf.get('id')} id={conf.get('id')} title={conf.get('title')}/>);
+		}
+
+		return null;
+	}
+
+
 	render() {
 		const { loading, confs } = this.props;
 
 		if (loading) {
 			return <Loading />;
 		}
-		const conferences = confs.valueSeq().isEmpty() ? null : confs.valueSeq().map(conf => <ConferenceLink key={conf.get('id')} id={conf.get('id')} title={conf.get('title')}/>);
 
 		return (
 			<Grid>
 				<Row>
 					<Col xs={12} md={12}>
 						<ListGroup>
-							{conferences}
+							{this.getConferences()}
 						</ListGroup>
 					</Col>
 				</Row>
@@ -39,13 +49,11 @@ class Home extends Component {
 	}
 }
 
-export default connect(
-	(state) => {
-		return {
-			loading: state.home.get('loading'),
-			confs: state.home.get('confs')
-		}
-	}, {
-		init
-	}
-)(Home);
+const mapStateToProps = state => ({
+	loading: state.home.get('loading'),
+	confs: state.home.get('confs')
+});
+
+const mapDispatchToProps = { init };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

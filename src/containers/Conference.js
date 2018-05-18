@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Row, Col, Table, Checkbox } from 'react-bootstrap';
+import { Grid, Row, Col, Table, Checkbox, Button, Glyphicon, ButtonToolbar } from 'react-bootstrap';
 import {initConference, loadConferenceTimetable} from '../AC/conference';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
@@ -44,35 +44,49 @@ class Conference extends Component {
 
 	}
 
-	render() {
-		const { loading, timetable, dateError, confId, dateId, confs } = this.props;
+	saveTimeBookingHandler() {
 
-		if (loading) {
-			return <Loading />;
-		}
+	}
 
-		let timetableCode = '';
+	undoTimeBookingHandler() {
+
+	}
+
+	changeTimeBookingHandler(e) {
+		const id = e.target.name.match(/\d+/g)[0];
+		console.log(id);
+	}
+
+	getTimetableCode = () => {
+		const { dateError, timetable } = this.props;
 
 		if (dateError === 'less') {
-			timetableCode = 'Нельзя просматривать или резервировать на прошедшую дату.';
+			return 'Нельзя просматривать или резервировать на прошедшую дату.';
 		} else if (dateError === 'more') {
-			timetableCode = 'Нельзя просматривать или резервировать больше чем на 3 недели.';
+			return 'Нельзя просматривать или резервировать больше чем на 3 недели.';
 		} else {
 			const time = 9*60;
-			timetableCode = timetable.valueSeq().map((key, value) =>
+			return timetable.valueSeq().map((key, value) =>
 				<tr key={value} className={(key === 'free' ? 'free' : 'busy')}>
 					<td>
-						<Checkbox name={"timetable[" + value + "]"}></Checkbox>
+						<Checkbox onChange={(e) => this.changeTimeBookingHandler(e)} name={"timetable[" + value + "]"}></Checkbox>
 					</td>
 					<td className={'time'}>
 						{parseInt((time + value * 15) / 60) + ':' + (('0' + ((time + value * 15) % 60)).slice(-2)) + ' - ' + parseInt((time + value * 15 + 15) / 60) + ':' + (('0' + ((time + value * 15 + 15) % 60) ).slice(-2))}
-
 					</td>
 					<td>
 						{(key === 'free' ? '' : 'ffff')}
 					</td>
 				</tr>
 			);
+		}
+	}
+
+	render() {
+		const { loading, confId, dateId } = this.props;
+
+		if (loading) {
+			return <Loading />;
 		}
 
 		return (
@@ -88,13 +102,26 @@ class Conference extends Component {
 					</Col>
 				</Row>
 				<Row className={'timetable-container'}>
-					<Col xs={12}>
-						<Table striped bordered condensed hover className={'timetable'}>
-							<tbody>
-								{timetableCode}
-							</tbody>
-						</Table>
-					</Col>
+					<form>
+						<Col xs={12}>
+							<Table striped bordered condensed hover className={'timetable'}>
+								<tbody>
+									{this.getTimetableCode()}
+								</tbody>
+							</Table>
+						</Col>
+						<Col xs={12}>
+							<ButtonToolbar>
+								<Button onClick={() => this.saveTimeBookingHandler} bsStyle="success">
+									<Glyphicon glyph="floppy-disk" />{' '}Save
+								</Button>
+								<Button onClick={() => this.undoTimeBookingHandler} bsStyle="danger">
+									<Glyphicon glyph="remove" />{' '}Clear
+								</Button>
+							</ButtonToolbar>
+						</Col>
+					</form>
+
 				</Row>
 			</Grid>
 		);
