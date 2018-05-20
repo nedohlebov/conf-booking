@@ -1,12 +1,13 @@
 import { Map, List } from 'immutable';
-import { INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD } from '../constants/index'
+import { INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, UNDO } from '../constants/index'
 const defaultState = Map({
 	'loading': false,
 	'dateError': '',
 	'confId': 0,
 	'timetable': Map({}),
 	'confs': Map({}),
-	'dateId': ''
+	'dateId': '',
+	'newTimetable': Map({}),
 });
 
 export default (state = defaultState, action) => {
@@ -34,6 +35,10 @@ export default (state = defaultState, action) => {
 				.set('dateError', '')
 				.set('loading', true);
 
+		case TIMETABLE + UNDO + START:
+			console.log('!!!!!!!!');
+			return state
+				.set('loading', true);
 	}
 
 	return state;

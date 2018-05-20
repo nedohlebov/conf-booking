@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
+import MessagePopup from '../components/MessagePopup';
+import AuthPopup from '../components/AuthPopup';
 import Footer from '../components/Footer';
 import '../styles.css';
 import PropTypes from 'prop-types';
@@ -18,6 +20,8 @@ class AppContainer extends Component {
 			<div key="main-content" className="main-content">
 				{this.props.children}
 			</div>,
+			<MessagePopup key="message-box" />,
+			<AuthPopup key="auth-box" />,
 			<Footer key="footer" />,
 		];
 	}

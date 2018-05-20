@@ -1,5 +1,6 @@
-import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF} from '../constants/index';
+import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, UNDO, MESSAGE_POPUP, SHOW, HIDE } from '../constants/index';
 import axios from 'axios';
+import {AUTH_POPUP} from '../constants';
 
 export function initConference(currentConfId, todayKey) {
 
@@ -25,9 +26,9 @@ export function initConference(currentConfId, todayKey) {
 		axios.get( 'https://conf-booking.firebaseio.com/timetables/' + currentConfId + '/' + todayKey + '/.json' )
 			.then( response => {
 				if (response.data === null) {
-					const json = '[ "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free" ]';
+					const json = [ "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free" ];
 
-					axios.put( 'https://conf-booking.firebaseio.com/timetables/' + currentConfId + '/' + todayKey + '/.json', json )
+					axios.put('https://conf-booking.firebaseio.com/timetables/' + currentConfId + '/' + todayKey + '/.json', json)
 						.then(
 							dispatch({
 								type: INIT + TIMETABLE + SUCCESS,
@@ -35,10 +36,9 @@ export function initConference(currentConfId, todayKey) {
 									id: todayKey
 								},
 								response: {
-									...response.data,
+									...json,
 								}
-							})
-						);
+							}));
 				} else {
 					dispatch({
 						type: INIT + TIMETABLE + SUCCESS,
@@ -77,7 +77,7 @@ export function loadConferenceTimetable(error, id, date) {
 			axios.get( 'https://conf-booking.firebaseio.com/timetables/' + id + '/' + date + '/.json' )
 				.then( response => {
 					if (response.data === null) {
-						const json = [ "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free" ];
+						const json = [ "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free" ];
 
 						axios.put( 'https://conf-booking.firebaseio.com/timetables/' + id + '/' + date + '/.json', json )
 							.then(
@@ -109,4 +109,28 @@ export function loadConferenceTimetable(error, id, date) {
 
 		}
 	}
+}
+
+export function undoTimeBookingCheck (newTimetable) {
+	if (!Object.keys(newTimetable).length) {
+		return (dispatch) => {
+			dispatch ({
+				type: MESSAGE_POPUP + SHOW,
+				payload: {
+					'title': 'Attention',
+					'details': 'Nothing is selected. Please fill in and/or select needed values.',
+				}
+			})
+		}
+	} else {
+		return (dispatch) => {
+			dispatch ({
+				type: AUTH_POPUP + SHOW,
+			})
+		}
+	}
+}
+
+export function undoTimeBooking () {
+	return 1;
 }

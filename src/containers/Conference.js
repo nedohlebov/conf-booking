@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Row, Col, Table, Checkbox, Button, Glyphicon, ButtonToolbar } from 'react-bootstrap';
-import {initConference, loadConferenceTimetable} from '../AC/conference';
+import {initConference, loadConferenceTimetable, undoTimeBooking, undoTimeBookingCheck} from '../AC/conference';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
 import DatePicker from 'react-bootstrap-date-picker';
-import moment from 'moment';
+//import LoginForm from '../components/LoginForm';
 
 class Conference extends Component {
 	static propTypes = {
@@ -16,7 +16,9 @@ class Conference extends Component {
 		dateError: PropTypes.string.isRequired,
 		dateId: PropTypes.string.isRequired,
 		confId: PropTypes.number.isRequired,
-		confs: PropTypes.object.isRequired
+		confs: PropTypes.object.isRequired,
+		undoTimeBooking: PropTypes.func.isRequired,
+		undoTimeBookingCheck: PropTypes.func.isRequired,
 	};
 
 	componentDidMount() {
@@ -27,7 +29,7 @@ class Conference extends Component {
 		this.props.initConference(currentConfId, todayKey);
 	}
 
-	dateSelectOnChangeHandler (...data) {
+	dateSelectOnChangeHandler = (...data) => {
 		const currentConfId = this.confId;
 		const today = new Date();
 		const todayF = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -42,22 +44,34 @@ class Conference extends Component {
 			this.loadConferenceTimetable(null, currentConfId, pickerKey);
 		}
 
-	}
+	};
 
-	saveTimeBookingHandler() {
+	saveTimeBookingHandler = () => {
+		//const { newTimetable } = this.props;
 
-	}
+		console.log('save');
+		//console.log(newTimetable);
+	};
 
-	undoTimeBookingHandler() {
+	undoTimeBookingCheckHandler = (newTimetable) => {
+		this.props.undoTimeBookingCheck(newTimetable)
+	};
 
-	}
+	undoTimeBookingHandler = () => {
+		undoTimeBooking();
+	};
 
-	changeTimeBookingHandler(e) {
+	changeTimeBookingHandler = (e, newTimetable) => {
 		const id = e.target.name.match(/\d+/g)[0];
-		console.log(id);
-	}
 
-	getTimetableCode = () => {
+		if (e.target.checked) {
+			newTimetable[id] = e.target.checked;
+		} else {
+			delete newTimetable[id];
+		}
+	};
+
+	getTimetableCode = (newTimetable) => {
 		const { dateError, timetable } = this.props;
 
 		if (dateError === 'less') {
@@ -69,7 +83,7 @@ class Conference extends Component {
 			return timetable.valueSeq().map((key, value) =>
 				<tr key={value} className={(key === 'free' ? 'free' : 'busy')}>
 					<td>
-						<Checkbox onChange={(e) => this.changeTimeBookingHandler(e)} name={"timetable[" + value + "]"}></Checkbox>
+						<Checkbox onChange={(e) => this.changeTimeBookingHandler(e, newTimetable)} name={"timetable[" + value + "]"}></Checkbox>
 					</td>
 					<td className={'time'}>
 						{parseInt((time + value * 15) / 60) + ':' + (('0' + ((time + value * 15) % 60)).slice(-2)) + ' - ' + parseInt((time + value * 15 + 15) / 60) + ':' + (('0' + ((time + value * 15 + 15) % 60) ).slice(-2))}
@@ -83,10 +97,16 @@ class Conference extends Component {
 	}
 
 	render() {
-		const { loading, confId, dateId } = this.props;
+		const { loading, confId, dateId, undoBooking } = this.props;
+
+		let newTimetable = {};
 
 		if (loading) {
 			return <Loading />;
+		}
+
+		if (undoBooking) {
+
 		}
 
 		return (
@@ -106,16 +126,16 @@ class Conference extends Component {
 						<Col xs={12}>
 							<Table striped bordered condensed hover className={'timetable'}>
 								<tbody>
-									{this.getTimetableCode()}
+									{this.getTimetableCode(newTimetable)}
 								</tbody>
 							</Table>
 						</Col>
 						<Col xs={12}>
 							<ButtonToolbar>
-								<Button onClick={() => this.saveTimeBookingHandler} bsStyle="success">
+								<Button onClick={() => this.saveTimeBookingHandler(newTimetable)} bsStyle="success">
 									<Glyphicon glyph="floppy-disk" />{' '}Save
 								</Button>
-								<Button onClick={() => this.undoTimeBookingHandler} bsStyle="danger">
+								<Button onClick={() => this.undoTimeBookingCheckHandler(newTimetable)} bsStyle="danger">
 									<Glyphicon glyph="remove" />{' '}Clear
 								</Button>
 							</ButtonToolbar>
@@ -137,9 +157,12 @@ export default connect(
 			confId: state.conference.get('confId'),
 			confs: state.home.get('confs'),
 			dateId: state.conference.get('dateId'),
+			undoTimeBooking: state.conference.get('undoTimeBooking'),
 		}
 	}, {
 		initConference,
-		loadConferenceTimetable
+		loadConferenceTimetable,
+		undoTimeBooking,
+		undoTimeBookingCheck
 	}
 )(Conference);
