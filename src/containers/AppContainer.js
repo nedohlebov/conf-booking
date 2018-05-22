@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
 import MessagePopup from '../components/MessagePopup';
-import AuthPopup from '../components/AuthPopup';
+import AuthPopup from './AuthPopup';
 import Footer from '../components/Footer';
 import '../styles.css';
 import PropTypes from 'prop-types';

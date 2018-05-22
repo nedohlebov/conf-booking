@@ -13,6 +13,7 @@ export const HIDE = '_HIDE';
 export const CHECK = '_CHECK';
 export const INPUT_TEXT = '_INPUT_TEXT';
 export const CHANGE = '_CHANGE';
+export const TEAMS = '_TEAMS';
 
 export const SET = '_SET';
 export const ROUTE = '_ROUTE';

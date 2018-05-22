@@ -1,5 +1,6 @@
-import { Map, List } from 'immutable';
+import {Map, List, fromJS} from 'immutable';
 import { INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, UNDO } from '../constants/index'
+import {TEAMS} from '../constants';
 const defaultState = Map({
 	'loading': false,
 	'dateError': '',
@@ -22,7 +23,7 @@ export default (state = defaultState, action) => {
 
 		case INIT + TIMETABLE + SUCCESS:
 			return state
-				.merge({timetable: response})
+				.merge(fromJS({'timetable': response}))
 				.set('loading', false)
 				.set('dateId', payload.id);
 
@@ -36,7 +37,6 @@ export default (state = defaultState, action) => {
 				.set('loading', true);
 
 		case TIMETABLE + UNDO + START:
-			console.log('!!!!!!!!');
 			return state
 				.set('loading', true);
 	}

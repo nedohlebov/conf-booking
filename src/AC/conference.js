@@ -1,4 +1,4 @@
-import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, UNDO, MESSAGE_POPUP, SHOW, HIDE } from '../constants/index';
+import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, UNDO, MESSAGE_POPUP, SHOW, TEAMS, HIDE } from '../constants/index';
 import axios from 'axios';
 import {AUTH_POPUP} from '../constants';
 
@@ -26,7 +26,10 @@ export function initConference(currentConfId, todayKey) {
 		axios.get( 'https://conf-booking.firebaseio.com/timetables/' + currentConfId + '/' + todayKey + '/.json' )
 			.then( response => {
 				if (response.data === null) {
-					const json = [ "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free" ];
+					const json = [
+						"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
+						"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
+						"free", "free", "free", "free", "free", "free", "free", "free" ];
 
 					axios.put('https://conf-booking.firebaseio.com/timetables/' + currentConfId + '/' + todayKey + '/.json', json)
 						.then(
@@ -77,7 +80,10 @@ export function loadConferenceTimetable(error, id, date) {
 			axios.get( 'https://conf-booking.firebaseio.com/timetables/' + id + '/' + date + '/.json' )
 				.then( response => {
 					if (response.data === null) {
-						const json = [ "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free", "free" ];
+						const json = [
+							"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
+							"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
+							"free", "free", "free", "free", "free", "free", "free", "free" ];
 
 						axios.put( 'https://conf-booking.firebaseio.com/timetables/' + id + '/' + date + '/.json', json )
 							.then(
@@ -111,7 +117,7 @@ export function loadConferenceTimetable(error, id, date) {
 	}
 }
 
-export function undoTimeBookingCheck (newTimetable) {
+export function timeBookingCheckAndAuth (newTimetable, operation) {
 	if (!Object.keys(newTimetable).length) {
 		return (dispatch) => {
 			dispatch ({
@@ -126,9 +132,16 @@ export function undoTimeBookingCheck (newTimetable) {
 		return (dispatch) => {
 			dispatch ({
 				type: AUTH_POPUP + SHOW,
+				payload: {
+					operation
+				}
 			})
 		}
 	}
+}
+
+export function saveTimeBooking() {
+	return 1;
 }
 
 export function undoTimeBooking () {

@@ -1,10 +1,14 @@
 import { Map, fromJS } from 'immutable';
-import { AUTH_POPUP, SHOW, HIDE, CHANGE, INPUT_TEXT } from '../constants/index'
+import { AUTH_POPUP, SHOW, HIDE, CHANGE, INPUT_TEXT, TEAMS, INIT, SUCCESS, ERROR } from '../constants/index';
+import {CHECK} from '../constants';
+
 const defaultState = Map({
 	'authPopupShow': false,
 	'isLogIn': false,
 	'authFailure': false,
-	'user': Map({})
+	'user': Map({}),
+	'teams': Map({}),
+	'operation': ''
 });
 
 export default (state = defaultState, action) => {
@@ -13,7 +17,8 @@ export default (state = defaultState, action) => {
 	switch (type) {
 		case AUTH_POPUP + SHOW:
 			return state
-				.set('authPopupShow', true);
+				.set('authPopupShow', true)
+				.set('operation', payload.operation);
 
 		case AUTH_POPUP + HIDE:
 			return state
@@ -22,6 +27,22 @@ export default (state = defaultState, action) => {
 
 		case CHANGE + INPUT_TEXT:
 			return state.setIn(['user', payload.fieldName], payload.fieldText);
+
+		case INIT + TEAMS + SUCCESS:
+			return state
+				.merge(fromJS({'teams': response}));
+
+		case AUTH_POPUP + CHECK + SUCCESS:
+			console.log(state.get('operation'));
+			return state
+				.set('authFailure', defaultState.get('authFailure'))
+				.set('isLogIn', true)
+				.set('authPopupShow', defaultState.get('authPopupShow'));
+
+		case AUTH_POPUP + CHECK + ERROR:
+			return state
+				.set('authFailure', true)
+				.set('isLogIn', defaultState.get('isLogIn'));
 
 	}
 

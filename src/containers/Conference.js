@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Row, Col, Table, Checkbox, Button, Glyphicon, ButtonToolbar } from 'react-bootstrap';
-import {initConference, loadConferenceTimetable, undoTimeBooking, undoTimeBookingCheck} from '../AC/conference';
+import {initConference, loadConferenceTimetable, undoTimeBooking, saveTimeBooking, timeBookingCheckAndAuth} from '../AC/conference';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
 import DatePicker from 'react-bootstrap-date-picker';
@@ -18,7 +18,9 @@ class Conference extends Component {
 		confId: PropTypes.number.isRequired,
 		confs: PropTypes.object.isRequired,
 		undoTimeBooking: PropTypes.func.isRequired,
-		undoTimeBookingCheck: PropTypes.func.isRequired,
+		timeBookingCheckAndAuth: PropTypes.func.isRequired,
+		saveTimeBooking: PropTypes.func.isRequired,
+		operation: PropTypes.string.isRequired
 	};
 
 	componentDidMount() {
@@ -30,31 +32,29 @@ class Conference extends Component {
 	}
 
 	dateSelectOnChangeHandler = (...data) => {
-		const currentConfId = this.confId;
+		const currentConfId = this.props.confId;
+
 		const today = new Date();
 		const todayF = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 		const pickerDate = new Date(data[0]);
 		const pickeDateF = new Date(pickerDate.getFullYear(), pickerDate.getMonth(), pickerDate.getDate());
 		const pickerKey = data[0].slice(0, 10);
 		if (pickeDateF < todayF) {
-			this.loadConferenceTimetable('less');
-		} else if ((pickeDateF - todayF) / (1000 * 60 *60 * 24) > 21) {
-			this.loadConferenceTimetable('more');
+			this.props.loadConferenceTimetable('less');
+		} else if ((pickeDateF - todayF) / (1000 * 60 *60 * 24) > 90) {
+			this.props.loadConferenceTimetable('more');
 		} else {
-			this.loadConferenceTimetable(null, currentConfId, pickerKey);
+			this.props.loadConferenceTimetable(null, currentConfId, pickerKey);
 		}
 
 	};
 
-	saveTimeBookingHandler = () => {
-		//const { newTimetable } = this.props;
-
-		console.log('save');
-		//console.log(newTimetable);
+	timeBookingCheckAndAuthHandler = (newTimetable, operation) => {
+		this.props.timeBookingCheckAndAuth(newTimetable, operation);
 	};
 
-	undoTimeBookingCheckHandler = (newTimetable) => {
-		this.props.undoTimeBookingCheck(newTimetable)
+	saveTimeBookingHandler = () => {
+		saveTimeBooking();
 	};
 
 	undoTimeBookingHandler = () => {
@@ -75,9 +75,9 @@ class Conference extends Component {
 		const { dateError, timetable } = this.props;
 
 		if (dateError === 'less') {
-			return 'Нельзя просматривать или резервировать на прошедшую дату.';
+			return <tr><td>Нельзя просматривать или резервировать на прошедшую дату.</td></tr>;
 		} else if (dateError === 'more') {
-			return 'Нельзя просматривать или резервировать больше чем на 3 недели.';
+			return <tr><td>Нельзя просматривать или резервировать больше чем на 90 дней.</td></tr>;
 		} else {
 			const time = 9*60;
 			return timetable.valueSeq().map((key, value) =>
@@ -94,7 +94,7 @@ class Conference extends Component {
 				</tr>
 			);
 		}
-	}
+	};
 
 	render() {
 		const { loading, confId, dateId, undoBooking } = this.props;
@@ -103,10 +103,6 @@ class Conference extends Component {
 
 		if (loading) {
 			return <Loading />;
-		}
-
-		if (undoBooking) {
-
 		}
 
 		return (
@@ -132,10 +128,10 @@ class Conference extends Component {
 						</Col>
 						<Col xs={12}>
 							<ButtonToolbar>
-								<Button onClick={() => this.saveTimeBookingHandler(newTimetable)} bsStyle="success">
+								<Button onClick={() => this.timeBookingCheckAndAuthHandler(newTimetable, 'save')} bsStyle="success">
 									<Glyphicon glyph="floppy-disk" />{' '}Save
 								</Button>
-								<Button onClick={() => this.undoTimeBookingCheckHandler(newTimetable)} bsStyle="danger">
+								<Button onClick={() => this.timeBookingCheckAndAuthHandler(newTimetable, 'undo')} bsStyle="danger">
 									<Glyphicon glyph="remove" />{' '}Clear
 								</Button>
 							</ButtonToolbar>
@@ -158,11 +154,13 @@ export default connect(
 			confs: state.home.get('confs'),
 			dateId: state.conference.get('dateId'),
 			undoTimeBooking: state.conference.get('undoTimeBooking'),
+			operation: state.authPopup.get('operation'),
 		}
 	}, {
 		initConference,
 		loadConferenceTimetable,
 		undoTimeBooking,
-		undoTimeBookingCheck
+		timeBookingCheckAndAuth,
+		saveTimeBooking,
 	}
 )(Conference);

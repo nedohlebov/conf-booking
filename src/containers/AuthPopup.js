@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Modal, Form, FormGroup, FormControl, Button, Col, Alert, ButtonToolbar } from 'react-bootstrap';
-import { hideAuthPopup, checkLogIn, changeFieldInput } from '../AC/authPopup';
+import { hideAuthPopup, checkLogIn, changeFieldInput, initTeams } from '../AC/authPopup';
 
 class AuthPopup extends Component {
 
@@ -13,8 +13,15 @@ class AuthPopup extends Component {
 		hideAuthPopup: PropTypes.func.isRequired,
 		authFailure: PropTypes.bool.isRequired,
 		user: PropTypes.object.isRequired,
-		changeFieldInput: PropTypes.func.isRequired
+		changeFieldInput: PropTypes.func.isRequired,
+		initTeams: PropTypes.func.isRequired,
+		teams: PropTypes.object.isRequired,
+		operation: PropTypes.string.isRequired
 	};
+
+	componentDidMount() {
+		this.props.initTeams();
+	}
 
 	closeAuthPopupHandler = () => {
 		this.props.hideAuthPopup();
@@ -25,12 +32,15 @@ class AuthPopup extends Component {
 	};
 
 	checkLogInHandler = () => {
-		this.props.checkLogIn();
+
+		const { user, teams, operation } = this.props;
+		console.log(operation);
+
+		this.props.checkLogIn(user, teams, );
 	};
 
 	render () {
-		const { authPopupShow } = this.props;
-		const { user } = this.props;
+		const { authPopupShow, user } = this.props;
 
 		const { authFailure } = this.props;
 		const login = user.get('login') || '';
@@ -68,7 +78,7 @@ class AuthPopup extends Component {
 						<FormGroup>
 							<Col smOffset={3} sm={9}>
 								<ButtonToolbar>
-									<Button bsStyle="success" type="submit">
+									<Button onClick={() => this.checkLogInHandler()} bsStyle="success">
 										Sign in
 									</Button>
 									<Button onClick={() => this.closeAuthPopupHandler()} bsStyle="danger">
@@ -91,11 +101,14 @@ export default connect(
 			isLogIn: state.authPopup.get('isLogIn'),
 			authPopupShow: state.authPopup.get('authPopupShow'),
 			authFailure: state.authPopup.get('authFailure'),
-			user: state.authPopup.get('user')
+			user: state.authPopup.get('user'),
+			teams: state.authPopup.get('teams'),
+			operation: state.authPopup.get('operation')
 		};
 	}, {
 		hideAuthPopup,
 		checkLogIn,
-		changeFieldInput
+		changeFieldInput,
+		initTeams
 	}
 )(AuthPopup);
