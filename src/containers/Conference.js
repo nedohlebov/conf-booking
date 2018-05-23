@@ -20,7 +20,10 @@ class Conference extends Component {
 		undoTimeBooking: PropTypes.func.isRequired,
 		timeBookingCheckAndAuth: PropTypes.func.isRequired,
 		saveTimeBooking: PropTypes.func.isRequired,
-		operation: PropTypes.string.isRequired
+		operation: PropTypes.string.isRequired,
+		newTimetable: PropTypes.object.isRequired,
+		teams: PropTypes.object.isRequired,
+		isLogIn: PropTypes.bool.isRequired
 	};
 
 	componentDidMount() {
@@ -29,6 +32,10 @@ class Conference extends Component {
 		const currentConfId = parseInt(this.props.match.params.id);
 
 		this.props.initConference(currentConfId, todayKey);
+	}
+
+	componentDidUpdate() {
+		console.log('update!!');
 	}
 
 	dateSelectOnChangeHandler = (...data) => {
@@ -97,13 +104,17 @@ class Conference extends Component {
 	};
 
 	render() {
-		const { loading, confId, dateId, undoBooking } = this.props;
+		const { loading, confId, dateId, operation } = this.props;
 
 		let newTimetable = {};
 
 		if (loading) {
 			return <Loading />;
 		}
+
+		if (operation === 'undo')
+
+		console.log(this.props);
 
 		return (
 			<Grid>
@@ -155,6 +166,10 @@ export default connect(
 			dateId: state.conference.get('dateId'),
 			undoTimeBooking: state.conference.get('undoTimeBooking'),
 			operation: state.authPopup.get('operation'),
+			newTimetable: state.conference.get('newTimetable'),
+			user: state.authPopup.get('user'),
+			teams: state.conference.get('teams'),
+			isLogIn: state.authPopup.get('authPopup')
 		}
 	}, {
 		initConference,

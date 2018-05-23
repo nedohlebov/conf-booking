@@ -1,6 +1,6 @@
 import {Map, List, fromJS} from 'immutable';
 import { INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, UNDO } from '../constants/index'
-import {TEAMS} from '../constants';
+import {BOOKING, NEW, SET, TEAMS, UPDATE} from '../constants';
 const defaultState = Map({
 	'loading': false,
 	'dateError': '',
@@ -9,6 +9,9 @@ const defaultState = Map({
 	'confs': Map({}),
 	'dateId': '',
 	'newTimetable': Map({}),
+	'operation': '',
+	'user': Map({}),
+	'teams': Map({})
 });
 
 export default (state = defaultState, action) => {
@@ -39,6 +42,16 @@ export default (state = defaultState, action) => {
 		case TIMETABLE + UNDO + START:
 			return state
 				.set('loading', true);
+
+		case SET + TIMETABLE + NEW:
+			return state
+				.set('operation', payload.operation)
+				.set('newTimetable', payload.newTimetable)
+
+		case TIMETABLE + UPDATE + BOOKING:
+			return state
+				.set('user', payload.user)
+				.set('teams', payload.teams);
 	}
 
 	return state;

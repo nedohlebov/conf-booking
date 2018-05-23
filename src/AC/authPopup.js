@@ -1,4 +1,4 @@
-import { AUTH_POPUP, HIDE, CHECK, CHANGE, INPUT_TEXT, ERROR, INIT, SUCCESS, TEAMS } from '../constants/index';
+import { AUTH_POPUP, HIDE, CHECK, CHANGE, INPUT_TEXT, ERROR, INIT, SUCCESS, TEAMS, UPDATE, TIMETABLE, BOOKING, SAVE } from '../constants/index';
 import axios from 'axios';
 import md5 from 'md5';
 
@@ -9,7 +9,20 @@ export function hideAuthPopup () {
 }
 
 export function checkLogIn (user, teams, operation) {
-	if (teams.get(user.get('login')) && (md5(user.get('password')) === teams.get(user.get('login')).get('password'))) {
+	if (teams.get(user.get('login')) && user.get('password') && (md5(user.get('password')) === teams.get(user.get('login')).get('password'))) {
+		return (dispatch) => {
+			dispatch({
+				type: AUTH_POPUP + CHECK + SUCCESS
+			});
+
+			dispatch({
+				type: TIMETABLE + UPDATE + BOOKING,
+				payload: {
+					user,
+					teams,
+				}
+			});
+		}
 		return {
 			type: AUTH_POPUP + CHECK + SUCCESS,
 			payload: {

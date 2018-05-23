@@ -1,4 +1,4 @@
-import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, UNDO, MESSAGE_POPUP, SHOW, TEAMS, HIDE } from '../constants/index';
+import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, MESSAGE_POPUP, SHOW, NEW, SET } from '../constants/index';
 import axios from 'axios';
 import {AUTH_POPUP} from '../constants';
 
@@ -133,6 +133,15 @@ export function timeBookingCheckAndAuth (newTimetable, operation) {
 			dispatch ({
 				type: AUTH_POPUP + SHOW,
 				payload: {
+					newTimetable,
+					operation
+				}
+			});
+
+			dispatch ({
+				type: SET + TIMETABLE + NEW,
+				payload: {
+					newTimetable,
 					operation
 				}
 			})
