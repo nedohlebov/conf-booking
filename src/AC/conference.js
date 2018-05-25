@@ -1,6 +1,11 @@
 import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, MESSAGE_POPUP, SHOW, NEW, SET, AUTH_POPUP, TEAMS, UPDATE, DEFAULT } from '../constants/index';
 import axios from 'axios';
 
+const json = [
+	"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
+	"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
+	"free", "free", "free", "free", "free", "free", "free", "free" ];
+
 export function initTeams() {
 	return (dispatch) => {
 		axios.get('https://conf-booking.firebaseio.com/teams.json')
@@ -15,62 +20,61 @@ export function initTeams() {
 	}
 }
 
+function timetableStart (id, todayKey) {
+	return {
+		type: INIT + TIMETABLE + START,
+		payload: {
+			id,
+			todayKey
+		}
+	}
+}
+
+function saveTimetable (id, data) {
+	return {
+		type: INIT + TIMETABLE + SUCCESS,
+		payload: {
+			id
+		},
+		response: {
+			...data,
+		}
+	}
+}
+
+function saveConfs (data) {
+	return {
+		type: INIT + CONF + SUCCESS,
+		response: {
+			...data
+		}
+	}
+}
+
 export function initConference(currentConfId, todayKey) {
 
 	return (dispatch) => {
-		dispatch({
-			type: INIT + TIMETABLE + START,
-			payload: {
-				id: currentConfId,
-				todayKey
-			}
-		});
+		dispatch(timetableStart(currentConfId, todayKey));
 
-		axios.get( 'https://conf-booking.firebaseio.com/confs.json' )
-			.then( response => {
-				dispatch({
-					type: INIT + CONF + SUCCESS,
-					response: {
-						...response.data,
-					}
-				});
+		axios.get('https://conf-booking.firebaseio.com/confs.json')
+			.then(response => {
+				dispatch(saveConfs(response.data));
 			});
 
-		axios.get( 'https://conf-booking.firebaseio.com/timetables/' + currentConfId + '/' + todayKey + '/.json' )
-			.then( response => {
+		axios.get(`https://conf-booking.firebaseio.com/timetables/${currentConfId}/${todayKey}/.json`)
+			.then(response => {
 				if (response.data === null) {
-					const json = [
-						"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
-						"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
-						"free", "free", "free", "free", "free", "free", "free", "free" ];
-
-					axios.put('https://conf-booking.firebaseio.com/timetables/' + currentConfId + '/' + todayKey + '/.json', json)
-						.then(
-							dispatch({
-								type: INIT + TIMETABLE + SUCCESS,
-								payload: {
-									id: todayKey
-								},
-								response: {
-									...json,
-								}
-							}));
+					axios.put(`https://conf-booking.firebaseio.com/timetables/${currentConfId}/${todayKey}/.json`, json)
+						.then(() => {
+							dispatch(saveTimetable(todayKey, json))
+						});
 				} else {
-					dispatch({
-						type: INIT + TIMETABLE + SUCCESS,
-						payload: {
-							id: todayKey
-						},
-						response: {
-							...response.data,
-						}
-					});
+					dispatch(saveTimetable(todayKey, response.data));
 				}
-			} )
-			.catch( error => {
-				//
-			} );
+			})
+			.catch(error => {
 
+			});
 	}
 }
 
@@ -93,33 +97,13 @@ export function loadConferenceTimetable(error, id, date) {
 			axios.get( 'https://conf-booking.firebaseio.com/timetables/' + id + '/' + date + '/.json' )
 				.then( response => {
 					if (response.data === null) {
-						const json = [
-							"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
-							"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
-							"free", "free", "free", "free", "free", "free", "free", "free" ];
 
 						axios.put( 'https://conf-booking.firebaseio.com/timetables/' + id + '/' + date + '/.json', json )
-							.then(
-								dispatch({
-									type: INIT + TIMETABLE + SUCCESS,
-									payload: {
-										id: date
-									},
-									response: {
-										...json,
-									}
-								})
+							.then(() =>
+								dispatch(saveTimetable(date, json))
 							);
 					} else {
-						dispatch({
-							type: INIT + TIMETABLE + SUCCESS,
-							payload: {
-								id: date
-							},
-							response: {
-								...response.data,
-							}
-						});
+						dispatch(saveTimetable(date, response.data))
 					}
 				} )
 				.catch( error => {
@@ -180,15 +164,7 @@ export function updateConferenceTimetable(tmpTimetable, error, confId, dateId) {
 
 		axios.put('https://conf-booking.firebaseio.com/timetables/' + confId + '/' + dateId + '/.json', tmpTimetable)
 			.then(response => {
-				dispatch({
-					type: INIT + TIMETABLE + SUCCESS,
-					payload: {
-						id: dateId
-					},
-					response: {
-						...tmpTimetable,
-					}
-				});
+				dispatch(saveTimetable(dateId, tmpTimetable));
 
 				if (error) {
 					dispatch ({

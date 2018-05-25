@@ -39,13 +39,23 @@ class AuthPopup extends Component {
 		this.props.checkLogIn(user, teams, );
 	};
 
+	getAuthFailure = () => {
+		const { authFailure } = this.props;
+		if (this.props.authFailure) {
+			return <Alert bsStyle="danger" className="i2l-auth-failure-alert">
+				{'Authentication Failure. The Login or Password is incorrect.'}
+			</Alert>;
+		}
+
+		return null;
+	};
+
 	render () {
 		const { authPopupShow, user } = this.props;
 
 		const { authFailure } = this.props;
 		const login = user.get('login') || '';
 		const password = user.get('password') || '';
-		const authFailureMessage = authFailure ? (<Alert bsStyle="danger" className="i2l-auth-failure-alert">{'Authentication Failure. The Login or Password is incorrect.'}</Alert>) : null;
 
 		return authPopupShow ?
 			<Modal.Dialog>
@@ -55,7 +65,7 @@ class AuthPopup extends Component {
 				<Modal.Body>
 					<Form horizontal onSubmit={this.checkLogInHandler} className="i2l-login-form">
 
-						{authFailureMessage}
+						{this.getAuthFailure()}
 
 						<FormGroup>
 							<Col sm={3}>
