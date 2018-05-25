@@ -12,7 +12,6 @@ const defaultState = Map({
 	'user': Map({}),
 	'teams': Map({}),
 	'isLogIn': false,
-	'uncheck': false
 });
 
 export default (state = defaultState, action) => {
@@ -23,15 +22,13 @@ export default (state = defaultState, action) => {
 				.set('loading', true)
 				.set('confId', payload.id)
 				.set('dateId', payload.todayKey)
-				.set('confs', state.get('confs'))
-				.set('uncheck', false);
+				.set('confs', state.get('confs'));
 
 		case INIT + TIMETABLE + TEAMS + SUCCESS:
 			return state
 				.merge(fromJS({'teams': response}));
 
 		case INIT + TIMETABLE + SUCCESS:
-			console.log(response);
 			return state
 				.merge(fromJS({'timetable': response}))
 				.set('loading', false)
@@ -44,6 +41,7 @@ export default (state = defaultState, action) => {
 				.set('isLogIn', false)
 				.set('user', defaultState.get('user'))
 				.merge(fromJS({'timetable': payload.tmpTimetable}))
+				.set('newTimetable', defaultState.get('newTimetable'));
 
 		case TIMETABLE + ERROR:
 			return state
@@ -61,14 +59,13 @@ export default (state = defaultState, action) => {
 		case SET + TIMETABLE + NEW:
 			return state
 				.set('operation', payload.operation)
-				.set('newTimetable', payload.newTimetable)
+				.set('newTimetable', payload.newTimetable);
 
 		case TIMETABLE + UPDATE + BOOKING:
 			return state
 				.set('user', payload.user)
 				.set('teams', payload.teams)
-				.set('isLogIn', true)
-				.set('uncheck', true);
+				.set('isLogIn', true);
 	}
 
 	return state;

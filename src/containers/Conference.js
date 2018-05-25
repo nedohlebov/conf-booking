@@ -25,7 +25,6 @@ class Conference extends Component {
 		user: PropTypes.object.isRequired,
 		updateConferenceTimetable: PropTypes.func.isRequired,
 		initTeams: PropTypes.func.isRequired,
-		uncheck: PropTypes.bool
 	};
 
 	updateConferenceTimetableHandler = (tmpTimetable, error, confId, dateId) => {
@@ -43,8 +42,6 @@ class Conference extends Component {
 
 	componentDidUpdate() {
 		const { isLogIn, operation, user, timetable, newTimetable, confId, dateId } = this.props;
-
-		console.log(isLogIn);
 
 		if (isLogIn) {
 			let tmpTimetable = {};
@@ -124,7 +121,7 @@ class Conference extends Component {
 	};
 
 	getTimetableCode = (newTimetable) => {
-		const { dateError, timetable, teams, uncheck } = this.props;
+		const { dateError, timetable, teams, isLogIn } = this.props;
 
 		if (dateError === 'less') {
 			return <tr><td>Нельзя просматривать или резервировать на прошедшую дату.</td></tr>;
@@ -132,10 +129,13 @@ class Conference extends Component {
 			return <tr><td>Нельзя просматривать или резервировать больше чем на 90 дней.</td></tr>;
 		} else {
 			const time = 9*60;
-			return timetable.sortBy((v, k) => parseInt(k)).valueSeq().map((key, value) =>
-				<tr key={value} className={(key === 'free' ? 'free' : 'busy')}>
+			return timetable.sortBy((v, k) => parseInt(k)).valueSeq().map((key, value) => {
+				const checked = isLogIn ? false : null;
+
+				return <tr key={value} className={(key === 'free' ? 'free' : 'busy')}>
 					<td>
-						<Checkbox onChange={(e) => this.changeTimeBookingHandler(e, newTimetable)} name={"timetable[" + value + "]"} ></Checkbox>
+						<Checkbox checked={checked} onChange={(e) => this.changeTimeBookingHandler(e, newTimetable)} name={"timetable[" + value + "]"} >
+						</Checkbox>
 					</td>
 					<td className={'time'}>
 						{parseInt((time + value * 15) / 60) + ':' + (('0' + ((time + value * 15) % 60)).slice(-2)) + ' - ' + parseInt((time + value * 15 + 15) / 60) + ':' + (('0' + ((time + value * 15 + 15) % 60) ).slice(-2))}
@@ -144,7 +144,7 @@ class Conference extends Component {
 						{(key === 'free' ? '' : (teams.get(key) ? teams.get(key).get('title') : ''))}
 					</td>
 				</tr>
-			);
+			});
 		}
 	};
 
@@ -211,7 +211,6 @@ export default connect(
 			user: state.authPopup.get('user'),
 			teams: state.conference.get('teams'),
 			isLogIn: state.authPopup.get('isLogIn'),
-			uncheck: state.conference.get('uncheck')
 		}
 	}, {
 		initConference,

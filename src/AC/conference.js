@@ -5,7 +5,6 @@ export function initTeams() {
 	return (dispatch) => {
 		axios.get('https://conf-booking.firebaseio.com/teams.json')
 			.then(response => {
-				console.log(response.data);
 				dispatch({
 					type: INIT + TIMETABLE + TEAMS + SUCCESS,
 					response: {
@@ -165,7 +164,6 @@ export function timeBookingCheckAndAuth (newTimetable, operation) {
 
 
 export function updateConferenceTimetable(tmpTimetable, error, confId, dateId) {
-	console.log(tmpTimetable);
 	return (dispatch) => {
 		dispatch({
 			type: AUTH_POPUP + SET + DEFAULT
