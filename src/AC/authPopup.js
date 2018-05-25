@@ -20,15 +20,11 @@ export function checkLogIn (user, teams, operation) {
 				payload: {
 					user,
 					teams,
+					operation
 				}
 			});
 		}
-		return {
-			type: AUTH_POPUP + CHECK + SUCCESS,
-			payload: {
-				operation
-			}
-		}
+
 	} else {
 		return {
 			type: AUTH_POPUP + CHECK + ERROR,

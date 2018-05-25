@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Row, Col, Table, Checkbox, Button, Glyphicon, ButtonToolbar } from 'react-bootstrap';
-import {initConference, loadConferenceTimetable, undoTimeBooking, saveTimeBooking, timeBookingCheckAndAuth} from '../AC/conference';
+import {initConference, loadConferenceTimetable, timeBookingCheckAndAuth, updateConferenceTimetable, initTeams } from '../AC/conference';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
 import DatePicker from 'react-bootstrap-date-picker';
@@ -17,13 +17,18 @@ class Conference extends Component {
 		dateId: PropTypes.string.isRequired,
 		confId: PropTypes.number.isRequired,
 		confs: PropTypes.object.isRequired,
-		undoTimeBooking: PropTypes.func.isRequired,
 		timeBookingCheckAndAuth: PropTypes.func.isRequired,
-		saveTimeBooking: PropTypes.func.isRequired,
 		operation: PropTypes.string.isRequired,
 		newTimetable: PropTypes.object.isRequired,
 		teams: PropTypes.object.isRequired,
-		isLogIn: PropTypes.bool.isRequired
+		isLogIn: PropTypes.bool.isRequired,
+		user: PropTypes.object.isRequired,
+		updateConferenceTimetable: PropTypes.func.isRequired,
+		initTeams: PropTypes.func.isRequired
+	};
+
+	updateConferenceTimetableHandler = (tmpTimetable, error, confId, dateId) => {
+		this.props.updateConferenceTimetable(tmpTimetable, error, confId, dateId);
 	};
 
 	componentDidMount() {
@@ -32,10 +37,57 @@ class Conference extends Component {
 		const currentConfId = parseInt(this.props.match.params.id);
 
 		this.props.initConference(currentConfId, todayKey);
+		this.props.initTeams();
 	}
 
 	componentDidUpdate() {
-		console.log('update!!');
+		const { isLogIn, operation, user, timetable, newTimetable, confId, dateId } = this.props;
+
+		console.log(isLogIn);
+
+		if (isLogIn) {
+			let tmpTimetable = {};
+			let error = false;
+			const userName = user.get('login');
+
+			if (operation === 'undo') {
+				timetable.map((key, value) => {
+					if (newTimetable[value]) {
+						if (userName === 'admin') {
+							tmpTimetable[value] = 'free';
+						} else {
+							if (key === userName) {
+								tmpTimetable[value] = 'free';
+							} else {
+								tmpTimetable[value] = 'free';
+								error = true;
+							}
+						}
+					} else {
+						tmpTimetable[value] = key;
+					}
+				});
+			} else {
+				timetable.map((key, value) => {
+					if (newTimetable[value]) {
+						if (userName === 'admin') {
+							tmpTimetable[value] = 'admin';
+						} else {
+							if (key === userName || key === 'free') {
+								tmpTimetable[value] = userName;
+							} else {
+								tmpTimetable[value] = key;
+								error = true;
+							}
+						}
+					} else {
+						tmpTimetable[value] = key;
+					}
+				});
+			}
+
+			this.updateConferenceTimetableHandler(tmpTimetable, error, confId, dateId);
+		}
 	}
 
 	dateSelectOnChangeHandler = (...data) => {
@@ -60,14 +112,6 @@ class Conference extends Component {
 		this.props.timeBookingCheckAndAuth(newTimetable, operation);
 	};
 
-	saveTimeBookingHandler = () => {
-		saveTimeBooking();
-	};
-
-	undoTimeBookingHandler = () => {
-		undoTimeBooking();
-	};
-
 	changeTimeBookingHandler = (e, newTimetable) => {
 		const id = e.target.name.match(/\d+/g)[0];
 
@@ -79,7 +123,7 @@ class Conference extends Component {
 	};
 
 	getTimetableCode = (newTimetable) => {
-		const { dateError, timetable } = this.props;
+		const { dateError, timetable, teams } = this.props;
 
 		if (dateError === 'less') {
 			return <tr><td>Нельзя просматривать или резервировать на прошедшую дату.</td></tr>;
@@ -96,7 +140,7 @@ class Conference extends Component {
 						{parseInt((time + value * 15) / 60) + ':' + (('0' + ((time + value * 15) % 60)).slice(-2)) + ' - ' + parseInt((time + value * 15 + 15) / 60) + ':' + (('0' + ((time + value * 15 + 15) % 60) ).slice(-2))}
 					</td>
 					<td>
-						{(key === 'free' ? '' : 'ffff')}
+						{(key === 'free' ? '' : (teams.get(key) ? teams.get(key).get('title') : ''))}
 					</td>
 				</tr>
 			);
@@ -104,17 +148,13 @@ class Conference extends Component {
 	};
 
 	render() {
-		const { loading, confId, dateId, operation } = this.props;
+		const { loading, confId, dateId, operation, timetable, user, isLogIn } = this.props;
 
 		let newTimetable = {};
 
 		if (loading) {
 			return <Loading />;
 		}
-
-		if (operation === 'undo')
-
-		console.log(this.props);
 
 		return (
 			<Grid>
@@ -169,13 +209,13 @@ export default connect(
 			newTimetable: state.conference.get('newTimetable'),
 			user: state.authPopup.get('user'),
 			teams: state.conference.get('teams'),
-			isLogIn: state.authPopup.get('isLogIn')
+			isLogIn: state.authPopup.get('isLogIn'),
 		}
 	}, {
 		initConference,
 		loadConferenceTimetable,
-		undoTimeBooking,
 		timeBookingCheckAndAuth,
-		saveTimeBooking,
+		updateConferenceTimetable,
+		initTeams
 	}
 )(Conference);

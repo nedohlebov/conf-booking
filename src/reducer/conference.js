@@ -1,6 +1,5 @@
-import {Map, List, fromJS} from 'immutable';
-import { INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, UNDO } from '../constants/index'
-import {BOOKING, NEW, SET, TEAMS, UPDATE} from '../constants';
+import {Map, fromJS} from 'immutable';
+import { INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, UNDO, BOOKING, NEW, SET, TEAMS, UPDATE } from '../constants/index'
 const defaultState = Map({
 	'loading': false,
 	'dateError': '',
@@ -23,13 +22,27 @@ export default (state = defaultState, action) => {
 				.set('loading', true)
 				.set('confId', payload.id)
 				.set('dateId', payload.todayKey)
-				.set('confs', state.get('confs'));
+				.set('confs', state.get('confs'))
+				;
+
+		case INIT + TIMETABLE + TEAMS + SUCCESS:
+			return state
+				.merge(fromJS({'teams': response}));
 
 		case INIT + TIMETABLE + SUCCESS:
+			console.log(response);
 			return state
 				.merge(fromJS({'timetable': response}))
 				.set('loading', false)
-				.set('dateId', payload.id);
+				.set('dateId', payload.id)
+				.set('isLogIn', false)
+				.set('user', defaultState.get('user'));
+
+		case INIT + TIMETABLE + UPDATE:
+			return state
+				.set('isLogIn', false)
+				.set('user', defaultState.get('user'))
+				.merge(fromJS({'timetable': payload.tmpTimetable}))
 
 		case TIMETABLE + ERROR:
 			return state

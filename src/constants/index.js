@@ -18,6 +18,7 @@ export const INPUT_TEXT = '_INPUT_TEXT';
 export const CHANGE = '_CHANGE';
 export const TEAMS = '_TEAMS';
 export const BOOKING = '_BOOKING';
+export const DEFAULT = '_DEFAULT';
 
 export const SET = '_SET';
 export const ROUTE = '_ROUTE';

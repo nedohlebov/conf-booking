@@ -1,5 +1,5 @@
 import { Map, fromJS } from 'immutable';
-import { AUTH_POPUP, SHOW, HIDE, CHANGE, INPUT_TEXT, TEAMS, INIT, SUCCESS, ERROR, CHECK } from '../constants/index';
+import { AUTH_POPUP, SHOW, HIDE, CHANGE, INPUT_TEXT, TEAMS, INIT, SUCCESS, ERROR, CHECK, SET, DEFAULT } from '../constants/index';
 
 const defaultState = Map({
 	'authPopupShow': false,
@@ -40,6 +40,10 @@ export default (state = defaultState, action) => {
 		case AUTH_POPUP + CHECK + ERROR:
 			return state
 				.set('authFailure', true)
+				.set('isLogIn', defaultState.get('isLogIn'));
+
+		case AUTH_POPUP + SET + DEFAULT:
+			return state
 				.set('isLogIn', defaultState.get('isLogIn'));
 
 	}

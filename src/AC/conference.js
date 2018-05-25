@@ -1,6 +1,20 @@
-import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, MESSAGE_POPUP, SHOW, NEW, SET } from '../constants/index';
+import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, MESSAGE_POPUP, SHOW, NEW, SET, AUTH_POPUP, TEAMS, UPDATE, DEFAULT } from '../constants/index';
 import axios from 'axios';
-import {AUTH_POPUP} from '../constants';
+
+export function initTeams() {
+	return (dispatch) => {
+		axios.get('https://conf-booking.firebaseio.com/teams.json')
+			.then(response => {
+				console.log(response.data);
+				dispatch({
+					type: INIT + TIMETABLE + TEAMS + SUCCESS,
+					response: {
+						...response.data,
+					}
+				});
+			});
+	}
+}
 
 export function initConference(currentConfId, todayKey) {
 
@@ -149,10 +163,44 @@ export function timeBookingCheckAndAuth (newTimetable, operation) {
 	}
 }
 
-export function saveTimeBooking() {
-	return 1;
-}
 
-export function undoTimeBooking () {
-	return 1;
+export function updateConferenceTimetable(tmpTimetable, error, confId, dateId) {
+	console.log(tmpTimetable);
+	return (dispatch) => {
+		dispatch({
+			type: AUTH_POPUP + SET + DEFAULT
+		});
+
+		dispatch({
+			type: INIT + TIMETABLE + UPDATE,
+			payload: {
+				id: confId,
+				todayKey: dateId,
+				tmpTimetable
+			}
+		});
+
+		axios.put('https://conf-booking.firebaseio.com/timetables/' + confId + '/' + dateId + '/.json', tmpTimetable)
+			.then(response => {
+				dispatch({
+					type: INIT + TIMETABLE + SUCCESS,
+					payload: {
+						id: dateId
+					},
+					response: {
+						...tmpTimetable,
+					}
+				});
+
+				if (error) {
+					dispatch ({
+						type: MESSAGE_POPUP + SHOW,
+						payload: {
+							'title': 'Attention',
+							'details': 'Некоторые поля не были обновлены. Обратитесь к администратору.',
+						}
+					})
+				}
+			});
+	}
 }
