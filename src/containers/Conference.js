@@ -169,7 +169,7 @@ export default connect(
 			newTimetable: state.conference.get('newTimetable'),
 			user: state.authPopup.get('user'),
 			teams: state.conference.get('teams'),
-			isLogIn: state.authPopup.get('authPopup')
+			isLogIn: state.authPopup.get('isLogIn')
 		}
 	}, {
 		initConference,

@@ -11,7 +11,8 @@ const defaultState = Map({
 	'newTimetable': Map({}),
 	'operation': '',
 	'user': Map({}),
-	'teams': Map({})
+	'teams': Map({}),
+	'isLogIn': false
 });
 
 export default (state = defaultState, action) => {
@@ -51,7 +52,8 @@ export default (state = defaultState, action) => {
 		case TIMETABLE + UPDATE + BOOKING:
 			return state
 				.set('user', payload.user)
-				.set('teams', payload.teams);
+				.set('teams', payload.teams)
+				.set('isLogIn', true);
 	}
 
 	return state;

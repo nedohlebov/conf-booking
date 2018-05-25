@@ -1,6 +1,5 @@
 import { Map, fromJS } from 'immutable';
-import { AUTH_POPUP, SHOW, HIDE, CHANGE, INPUT_TEXT, TEAMS, INIT, SUCCESS, ERROR } from '../constants/index';
-import {CHECK} from '../constants';
+import { AUTH_POPUP, SHOW, HIDE, CHANGE, INPUT_TEXT, TEAMS, INIT, SUCCESS, ERROR, CHECK } from '../constants/index';
 
 const defaultState = Map({
 	'authPopupShow': false,
@@ -33,7 +32,6 @@ export default (state = defaultState, action) => {
 				.merge(fromJS({'teams': response}));
 
 		case AUTH_POPUP + CHECK + SUCCESS:
-			console.log(state.get('operation'));
 			return state
 				.set('authFailure', defaultState.get('authFailure'))
 				.set('isLogIn', true)
