@@ -11,7 +11,8 @@ const defaultState = Map({
 	'operation': '',
 	'user': Map({}),
 	'teams': Map({}),
-	'isLogIn': false
+	'isLogIn': false,
+	'uncheck': false
 });
 
 export default (state = defaultState, action) => {
@@ -23,7 +24,7 @@ export default (state = defaultState, action) => {
 				.set('confId', payload.id)
 				.set('dateId', payload.todayKey)
 				.set('confs', state.get('confs'))
-				;
+				.set('uncheck', false);
 
 		case INIT + TIMETABLE + TEAMS + SUCCESS:
 			return state
@@ -66,7 +67,8 @@ export default (state = defaultState, action) => {
 			return state
 				.set('user', payload.user)
 				.set('teams', payload.teams)
-				.set('isLogIn', true);
+				.set('isLogIn', true)
+				.set('uncheck', true);
 	}
 
 	return state;
