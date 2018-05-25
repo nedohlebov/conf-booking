@@ -5,7 +5,6 @@ import {initConference, loadConferenceTimetable, timeBookingCheckAndAuth, update
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
 import DatePicker from 'react-bootstrap-date-picker';
-//import LoginForm from '../components/LoginForm';
 
 class Conference extends Component {
 	static propTypes = {
@@ -49,7 +48,7 @@ class Conference extends Component {
 			const userName = user.get('login');
 
 			if (operation === 'undo') {
-				timetable.map((key, value) => {
+				timetable.forEach((key, value) => {
 					if (newTimetable[value]) {
 						if (userName === 'admin') {
 							tmpTimetable[value] = 'free';

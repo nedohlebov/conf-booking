@@ -41,7 +41,7 @@ class AuthPopup extends Component {
 
 	getAuthFailure = () => {
 		const { authFailure } = this.props;
-		if (this.props.authFailure) {
+		if (authFailure) {
 			return <Alert bsStyle="danger" className="i2l-auth-failure-alert">
 				{'Authentication Failure. The Login or Password is incorrect.'}
 			</Alert>;
@@ -53,7 +53,6 @@ class AuthPopup extends Component {
 	render () {
 		const { authPopupShow, user } = this.props;
 
-		const { authFailure } = this.props;
 		const login = user.get('login') || '';
 		const password = user.get('password') || '';
 
