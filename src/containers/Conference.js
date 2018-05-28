@@ -32,16 +32,21 @@ class Conference extends Component {
 		this.props.updateConferenceTimetable(tmpTimetable, error, confId, dateId);
 	};
 
-	componentDidMount() {
-		setInterval(() => {
-			const today = new Date();
-			const todayKey = today.getFullYear().toString() + '-' + (('0' + (today.getMonth() + 1)).slice(-2)).toString() + '-' + today.getDate().toString();
-			const currentConfId = this.props.match.params.id;
+	initC = () => {
+		const today = new Date();
+		const todayKey = today.getFullYear().toString() + '-' + (('0' + (today.getMonth() + 1)).slice(-2)).toString() + '-' + today.getDate().toString();
+		const currentConfId = this.props.match.params.id;
 
-			this.props.initConference(currentConfId, todayKey);
-			this.props.initConference(currentConfId, todayKey);
-		}, 5000);
+		this.props.initConference(currentConfId, todayKey);
 		this.props.initTeams();
+	};
+
+	componentDidMount() {
+		this.initC();
+		setInterval(() => {
+			this.initC();
+		}, 5000);
+
 	}
 
 	componentDidUpdate() {
