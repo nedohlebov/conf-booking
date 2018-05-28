@@ -21,11 +21,15 @@ class Home extends Component {
 		const { confs } = this.props;
 
 		if (!confs.valueSeq().isEmpty()) {
-			return confs.valueSeq().map(conf => <ConferenceLink key={conf.get('id')} id={conf.get('id')} title={conf.get('title')}/>);
+			return confs.valueSeq().map(conf => {
+				const id = conf.get('title').toLowerCase().replace(/\s+/, '');
+
+				return <ConferenceLink key={id} id={id} title={conf.get('title')}/>
+			});
 		}
 
 		return null;
-	}
+	};
 
 
 	render() {

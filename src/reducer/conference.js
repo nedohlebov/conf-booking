@@ -1,9 +1,10 @@
 import {Map, fromJS} from 'immutable';
 import { INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, UNDO, BOOKING, NEW, SET, TEAMS, UPDATE } from '../constants/index'
+import {CHANGE, CHECKING} from '../constants';
 const defaultState = Map({
 	'loading': false,
 	'dateError': '',
-	'confId': 0,
+	'confId': '',
 	'timetable': Map({}),
 	'confs': Map({}),
 	'dateId': '',
@@ -12,6 +13,7 @@ const defaultState = Map({
 	'user': Map({}),
 	'teams': Map({}),
 	'isLogIn': false,
+	'checking': Map({})
 });
 
 export default (state = defaultState, action) => {
@@ -66,6 +68,16 @@ export default (state = defaultState, action) => {
 				.set('user', payload.user)
 				.set('teams', payload.teams)
 				.set('isLogIn', true);
+
+		case CHANGE + CHECKING:
+			return state
+				.setIn(['checking', payload.id], payload.isChecked)
+				.setIn(['newTimetable', payload.id], (payload.isChecked ? true : null));
+
+		case TIMETABLE + UNDO + CHECKING:
+			return state
+				.set('checking', defaultState.get('checking'))
+				.set('newTimetable', defaultState.get('newTimetable'))
 	}
 
 	return state;

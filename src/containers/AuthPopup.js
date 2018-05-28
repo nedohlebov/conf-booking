@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Modal, Form, FormGroup, FormControl, Button, Col, Alert, ButtonToolbar } from 'react-bootstrap';
-import { hideAuthPopup, checkLogIn, changeFieldInput, initTeams } from '../AC/authPopup';
+import { hideAuthPopup, checkLogIn, changeFieldInput } from '../AC/authPopup';
+import { init } from '../AC/home';
+import { initTeams } from '../AC/conference';
 
 class AuthPopup extends Component {
 
@@ -16,11 +18,14 @@ class AuthPopup extends Component {
 		changeFieldInput: PropTypes.func.isRequired,
 		initTeams: PropTypes.func.isRequired,
 		teams: PropTypes.object.isRequired,
-		operation: PropTypes.string.isRequired
+		confs: PropTypes.object.isRequired,
+		operation: PropTypes.string.isRequired,
+		isAdmin: PropTypes.bool.isRequired
 	};
 
 	componentDidMount() {
 		this.props.initTeams();
+		this.props.init();
 	}
 
 	closeAuthPopupHandler = () => {
@@ -32,17 +37,15 @@ class AuthPopup extends Component {
 	};
 
 	checkLogInHandler = () => {
+		const { user, teams, isAdmin } = this.props;
 
-		const { user, teams, operation } = this.props;
-		console.log(operation);
-
-		this.props.checkLogIn(user, teams, );
+		this.props.checkLogIn(user, teams, isAdmin);
 	};
 
 	getAuthFailure = () => {
 		const { authFailure } = this.props;
 		if (authFailure) {
-			return <Alert bsStyle="danger" className="i2l-auth-failure-alert">
+			return <Alert bsStyle="danger">
 				{'Authentication Failure. The Login or Password is incorrect.'}
 			</Alert>;
 		}
@@ -62,7 +65,7 @@ class AuthPopup extends Component {
 					<Modal.Title>Please, Sign In</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					<Form horizontal onSubmit={this.checkLogInHandler} className="i2l-login-form">
+					<Form horizontal onSubmit={this.checkLogInHandler}>
 
 						{this.getAuthFailure()}
 
@@ -71,7 +74,7 @@ class AuthPopup extends Component {
 								Login
 							</Col>
 							<Col sm={9}>
-								<FormControl type="text" placeholder="Login" name="login" value={login} onChange={this.inputFieldOnChangeHandler} className="i2l-login-field" />
+								<FormControl type="text" placeholder="Login" name="login" value={login} onChange={this.inputFieldOnChangeHandler} />
 							</Col>
 						</FormGroup>
 
@@ -111,13 +114,16 @@ export default connect(
 			authPopupShow: state.authPopup.get('authPopupShow'),
 			authFailure: state.authPopup.get('authFailure'),
 			user: state.authPopup.get('user'),
-			teams: state.authPopup.get('teams'),
-			operation: state.authPopup.get('operation')
+			teams: state.conference.get('teams'),
+			confs: state.home.get('confs'),
+			operation: state.authPopup.get('operation'),
+			isAdmin: state.authPopup.get('isAdmin'),
 		};
 	}, {
 		hideAuthPopup,
 		checkLogIn,
 		changeFieldInput,
-		initTeams
+		initTeams,
+		init
 	}
 )(AuthPopup);

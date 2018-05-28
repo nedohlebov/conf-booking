@@ -1,5 +1,6 @@
-import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, MESSAGE_POPUP, SHOW, NEW, SET, AUTH_POPUP, TEAMS, UPDATE, DEFAULT } from '../constants/index';
+import {INIT, START, SUCCESS, TIMETABLE, ERROR, LOAD, CONF, MESSAGE_POPUP, SHOW, NEW, SET, AUTH_POPUP, TEAMS, UPDATE, DEFAULT, CHECKING, CHANGE } from '../constants/index';
 import axios from 'axios';
+import {UNDO} from '../constants';
 
 const json = [
 	"free", "free", "free", "free", "free", "free", "free", "free", "free", "free",
@@ -115,7 +116,7 @@ export function loadConferenceTimetable(error, id, date) {
 }
 
 export function timeBookingCheckAndAuth (newTimetable, operation) {
-	if (!Object.keys(newTimetable).length) {
+	if (!newTimetable.size) {
 		return (dispatch) => {
 			dispatch ({
 				type: MESSAGE_POPUP + SHOW,
@@ -154,6 +155,10 @@ export function updateConferenceTimetable(tmpTimetable, error, confId, dateId) {
 		});
 
 		dispatch({
+			type: TIMETABLE + UNDO + CHECKING
+		});
+
+		dispatch({
 			type: INIT + TIMETABLE + UPDATE,
 			payload: {
 				id: confId,
@@ -177,4 +182,14 @@ export function updateConferenceTimetable(tmpTimetable, error, confId, dateId) {
 				}
 			});
 	}
+}
+
+export function changeFieldCheckbox (id = '', isChecked = false) {
+	return {
+		type: CHANGE + CHECKING,
+		payload: {
+			id,
+			isChecked
+		}
+	};
 }

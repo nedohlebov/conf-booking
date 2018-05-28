@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Row, Col, Table, Checkbox, Button, Glyphicon, ButtonToolbar } from 'react-bootstrap';
-import {initConference, loadConferenceTimetable, timeBookingCheckAndAuth, updateConferenceTimetable, initTeams } from '../AC/conference';
+import {initConference, loadConferenceTimetable, timeBookingCheckAndAuth, updateConferenceTimetable, initTeams, changeFieldCheckbox } from '../AC/conference';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
 import DatePicker from 'react-bootstrap-date-picker';
@@ -14,7 +14,7 @@ class Conference extends Component {
 		loading: PropTypes.bool.isRequired,
 		dateError: PropTypes.string.isRequired,
 		dateId: PropTypes.string.isRequired,
-		confId: PropTypes.number.isRequired,
+		confId: PropTypes.string.isRequired,
 		confs: PropTypes.object.isRequired,
 		timeBookingCheckAndAuth: PropTypes.func.isRequired,
 		operation: PropTypes.string.isRequired,
@@ -24,6 +24,8 @@ class Conference extends Component {
 		user: PropTypes.object.isRequired,
 		updateConferenceTimetable: PropTypes.func.isRequired,
 		initTeams: PropTypes.func.isRequired,
+		changeFieldCheckbox: PropTypes.func.isRequired,
+		checking: PropTypes.object.isRequired
 	};
 
 	updateConferenceTimetableHandler = (tmpTimetable, error, confId, dateId) => {
@@ -31,11 +33,14 @@ class Conference extends Component {
 	};
 
 	componentDidMount() {
-		const today = new Date();
-		const todayKey =  today.getFullYear().toString() + '-' + (('0' + (today.getMonth() + 1)).slice(-2)).toString() + '-'+ today.getDate().toString();
-		const currentConfId = parseInt(this.props.match.params.id);
+		setInterval(() => {
+			const today = new Date();
+			const todayKey = today.getFullYear().toString() + '-' + (('0' + (today.getMonth() + 1)).slice(-2)).toString() + '-' + today.getDate().toString();
+			const currentConfId = this.props.match.params.id;
 
-		this.props.initConference(currentConfId, todayKey);
+			this.props.initConference(currentConfId, todayKey);
+			this.props.initConference(currentConfId, todayKey);
+		}, 5000);
 		this.props.initTeams();
 	}
 
@@ -49,7 +54,7 @@ class Conference extends Component {
 
 			if (operation === 'undo') {
 				timetable.forEach((key, value) => {
-					if (newTimetable[value]) {
+					if (newTimetable.get(value)) {
 						if (userName === 'admin') {
 							tmpTimetable[value] = 'free';
 						} else {
@@ -66,7 +71,7 @@ class Conference extends Component {
 				});
 			} else {
 				timetable.map((key, value) => {
-					if (newTimetable[value]) {
+					if (newTimetable.get(value)) {
 						if (userName === 'admin') {
 							tmpTimetable[value] = 'admin';
 						} else {
@@ -111,16 +116,13 @@ class Conference extends Component {
 
 	changeTimeBookingHandler = (e, newTimetable) => {
 		const id = e.target.name.match(/\d+/g)[0];
-
-		if (e.target.checked) {
-			newTimetable[id] = e.target.checked;
-		} else {
-			delete newTimetable[id];
-		}
+		this.props.changeFieldCheckbox(id, e.target.checked);
 	};
 
 	getTimetableCode = (newTimetable) => {
-		const { dateError, timetable, teams, isLogIn } = this.props;
+		const { dateError, timetable, teams, isLogIn, checking } = this.props;
+		let chk = {};
+		checking.forEach((k, v) => chk[v] = k);
 
 		if (dateError === 'less') {
 			return <tr><td>Нельзя просматривать или резервировать на прошедшую дату.</td></tr>;
@@ -129,7 +131,7 @@ class Conference extends Component {
 		} else {
 			const time = 9*60;
 			return timetable.sortBy((v, k) => parseInt(k)).valueSeq().map((key, value) => {
-				const checked = isLogIn ? false : null;
+				const checked = chk[value] ? 'checked': '';
 
 				return <tr key={value} className={(key === 'free' ? 'free' : 'busy')}>
 					<td>
@@ -148,13 +150,11 @@ class Conference extends Component {
 	};
 
 	render() {
-		const { loading, confId, dateId } = this.props;
+		const { confId, dateId, newTimetable } = this.props;
 
-		let newTimetable = {};
-
-		if (loading) {
-			return <Loading />;
-		}
+		//if (loading) {
+		//	return <Loading />;
+		//}
 
 		return (
 			<Grid>
@@ -210,12 +210,14 @@ export default connect(
 			user: state.authPopup.get('user'),
 			teams: state.conference.get('teams'),
 			isLogIn: state.authPopup.get('isLogIn'),
+			checking: state.conference.get('checking')
 		}
 	}, {
 		initConference,
 		loadConferenceTimetable,
 		timeBookingCheckAndAuth,
 		updateConferenceTimetable,
-		initTeams
+		initTeams,
+		changeFieldCheckbox
 	}
 )(Conference);

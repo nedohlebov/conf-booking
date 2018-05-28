@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Row, Col, Table, Button, Glyphicon, ButtonToolbar } from 'react-bootstrap';
-import { updateTeam, updateConf } from '../AC/admin';
+import { updateTeam, updateConf, handleAdmin } from '../AC/admin';
 import { initTeams } from '../AC/conference';
 import { init } from '../AC/home';
 import {connect} from 'react-redux';
 import Loading from '../components/Loading';
+import { CONF, TEAMS, EDIT, ADD, DELETE} from '../constants/index';
 
 class Admin extends Component {
 	static propTypes = {
@@ -14,52 +15,106 @@ class Admin extends Component {
 		teams: PropTypes.object.isRequired,
 		confs: PropTypes.object.isRequired,
 		loading: PropTypes.bool.isRequired,
+		handleAdmin: PropTypes.func.isRequired,
+		type: PropTypes.string.isRequired,
+		operation: PropTypes.string.isRequired,
+		id: PropTypes.any.isRequired,
+		isLogIn: PropTypes.bool.isRequired,
+		updateConf: PropTypes.func.isRequired,
+		updateTeam: PropTypes.func.isRequired,
 	};
 
 	componentDidMount() {
-		this.props.init();
-		this.props.initTeams();
+		setInterval(() => {
+			this.props.initTeams();
+			this.props.init();
+		}, 5000);
 	}
+
+	componentDidUpdate() {
+		const { isLogIn, teams, confs, operation, type, id } = this.props;
+
+		if (isLogIn) {
+			if (operation === DELETE) {
+				if (type === CONF) {
+					let newConfs = {};
+
+					confs.valueSeq().forEach((conf) => {
+						const curId = conf.get('title').toLowerCase().replace(/\s+/, '');
+						if (curId !== id) {
+							newConfs[curId] = {'title': conf.get('title')};
+						}
+					});
+
+					this.props.updateConf(newConfs);
+				} else if (type === TEAMS) {
+					let newTeams = {};
+
+					teams.valueSeq().forEach((team) => {
+						const curId = team.get('title').toLowerCase().replace(/\s+/, '');
+						if (curId !== id) {
+							newTeams[curId] = {
+								'title': team.get('title'),
+								'password': team.get('password')
+							};
+						}
+					});
+					this.props.updateTeam(newTeams);
+				}
+			} else if (operation === EDIT) {
+
+			} else if (operation === ADD) {
+
+			}
+		}
+	}
+
+	adminFormHandler = (type, operation, id) => {
+		this.props.handleAdmin(type, operation, id);
+	};
 
 	getConfsCode = () => {
 		const { confs } = this.props;
 
 
-		return confs.valueSeq().map(conf =>
-			<tr key={conf.get('id')}>
+		return confs.valueSeq().map(conf => {
+			const id = conf.get('title').toLowerCase().replace(/\s+/, '');
+
+			return <tr key={conf.get('title')}>
 				<td>
 					{ conf.get('title') }
 				</td>
 				<td>
 					<ButtonToolbar>
-						<Button bsStyle="primary">
+						<Button onClick={() => this.adminFormHandler(CONF, EDIT, id)} bsStyle="primary">
 							<Glyphicon glyph="edit" />
 						</Button>
-						<Button bsStyle="danger">
+						<Button onClick={() => this.adminFormHandler(CONF, DELETE, id)} bsStyle="danger">
 							<Glyphicon glyph="remove" />
 						</Button>
 					</ButtonToolbar>
 				</td>
 			</tr>
-		);
+		});
 	};
 
 	getTeamsCode = () => {
 		const { teams } = this.props;
 
 		return teams.valueSeq().map(team => {
-			const hiddenClass = team === 'admin' ? 'hidden' : '';
+			const id = team.get('title').toLowerCase().replace(/\s+/, '');
+			const hiddenClass = (id === 'admin' ? 'hidden' : '');
 
-			return <tr key={team}>
+			return <tr key={id}>
 					<td>
 						{ team.get('title') }
 					</td>
 					<td>
 						<ButtonToolbar>
-							<Button bsStyle="primary">
+							<Button onClick={() => this.adminFormHandler(TEAMS, EDIT, id)} bsStyle="primary">
 								<Glyphicon glyph="edit" />
 							</Button>
-							<Button bsStyle="danger" className={hiddenClass}>
+							<Button onClick={() => this.adminFormHandler(TEAMS, DELETE, id)} bsStyle="danger" className={hiddenClass}>
 								<Glyphicon glyph="remove" />
 							</Button>
 						</ButtonToolbar>
@@ -70,12 +125,10 @@ class Admin extends Component {
 
 	render() {
 		const { loading } = this.props;
-		console.log(this.props);
 
 		if (loading) {
 			return <Loading />;
 		}
-
 
 		return (
 			<Grid>
@@ -88,7 +141,7 @@ class Admin extends Component {
 								<tr key='addConf'>
 									<td colSpan={2}>
 										<Button bsStyle="success">
-											<Glyphicon glyph="plus" />
+											<Glyphicon  onClick={() => this.adminFormHandler(CONF, ADD)} glyph="plus" />
 										</Button>
 									</td>
 								</tr>
@@ -102,7 +155,7 @@ class Admin extends Component {
 								{this.getTeamsCode()}
 								<tr key='addTeam'>
 									<td colSpan={2}>
-										<Button bsStyle="success">
+										<Button onClick={() => this.adminFormHandler(TEAMS, ADD)} bsStyle="success">
 											<Glyphicon glyph="plus" />
 										</Button>
 									</td>
@@ -121,12 +174,17 @@ export default connect(
 		return {
 			loading: state.admin.get('loading'),
 			confs: state.home.get('confs'),
-			teams: state.authPopup.get('teams'),
+			teams: state.conference.get('teams'),
+			type: state.authPopup.get('type'),
+			operation: state.authPopup.get('operation'),
+			id: state.authPopup.get('id'),
+			isLogIn: state.authPopup.get('isLogIn'),
 		}
 	}, {
 		init,
 		initTeams,
 		updateTeam,
 		updateConf,
+		handleAdmin
 	}
 )(Admin);

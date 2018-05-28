@@ -14,7 +14,7 @@ const notFound = () => {
 						<p>404. Not found.</p>
 						<p></p>
 						<p>
-							<Link to={'/'} className="i2l-home-link">
+							<Link to={'/'}>
 								<Button bsStyle="primary">
 									<Glyphicon glyph="home" />&nbsp;&nbsp;&nbsp;Home
 								</Button>
