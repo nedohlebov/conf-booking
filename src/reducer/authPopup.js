@@ -1,6 +1,5 @@
 import { Map, fromJS } from 'immutable';
-import { AUTH_POPUP, SHOW, HIDE, CHANGE, INPUT_TEXT, TEAMS, INIT, SUCCESS, ERROR, CHECK, SET, DEFAULT } from '../constants/index';
-import {ADMIN} from '../constants';
+import { AUTH_POPUP, SHOW, HIDE, CHANGE, INPUT_TEXT, TEAMS, INIT, SUCCESS, ERROR, CHECK, SET, DEFAULT, ADMIN } from '../constants/index';
 
 const defaultState = Map({
 	'authPopupShow': false,

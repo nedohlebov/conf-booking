@@ -1,5 +1,5 @@
 import { Map, fromJS } from 'immutable';
-import { INIT, UPDATE, TEAMS, CONF, START, SUCCESS } from '../constants/index';
+import { UPDATE, TEAMS, CONF } from '../constants/index';
 
 const defaultState = Map({
 	'teams': Map({}),

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Header from '../components/Header';
 import MessagePopup from '../components/MessagePopup';
 import AuthPopup from './AuthPopup';
+import EditEntity from './EditEntity';
 import Footer from '../components/Footer';
 import '../styles.css';
 import PropTypes from 'prop-types';
@@ -22,6 +23,7 @@ class AppContainer extends Component {
 			</div>,
 			<MessagePopup key="message-box" />,
 			<AuthPopup key="auth-box" />,
+			<EditEntity key="edit-entity" />,
 			<Footer key="footer" />,
 		];
 	}

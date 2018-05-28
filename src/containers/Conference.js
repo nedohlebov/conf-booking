@@ -43,6 +43,7 @@ class Conference extends Component {
 
 	componentDidMount() {
 		this.initC();
+
 		setInterval(() => {
 			this.initC();
 		}, 5000);

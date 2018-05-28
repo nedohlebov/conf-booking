@@ -1,11 +1,15 @@
 import { AUTH_POPUP, ADMIN, SHOW } from '../constants/index';
 import axios from 'axios';
-import {CONF, DEFAULT, INIT, SET, SUCCESS, TEAMS, TIMETABLE} from '../constants';
+import {CONF, DEFAULT, ENTITY_POPUP, HIDE, INIT, SET, SUCCESS, TEAMS, TIMETABLE} from '../constants';
 
 export function updateConf (newConfs) {
 	return (dispatch) => {
 		dispatch({
 			type: AUTH_POPUP + SET + DEFAULT
+		});
+
+		dispatch({
+			type: ENTITY_POPUP + SET + DEFAULT
 		});
 
 		axios.put( 'https://conf-booking.firebaseio.com/confs.json', newConfs )
@@ -31,6 +35,10 @@ export function updateTeam (newTeams) {
 	return (dispatch) => {
 		dispatch({
 			type: AUTH_POPUP + SET + DEFAULT
+		});
+
+		dispatch({
+			type: ENTITY_POPUP + SET + DEFAULT
 		});
 
 		axios.put( 'https://conf-booking.firebaseio.com/teams.json', newTeams )
@@ -62,4 +70,16 @@ export function handleAdmin (type, operation, id) {
 			}
 		});
 	}
+}
+
+export function initEditEntityPopup () {
+	return (dispatch) => {
+		dispatch({
+			type: AUTH_POPUP + HIDE
+		});
+
+		dispatch({
+			type: ENTITY_POPUP + SHOW
+		});
+	};
 }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Row, Col, Table, Button, Glyphicon, ButtonToolbar } from 'react-bootstrap';
-import { updateTeam, updateConf, handleAdmin } from '../AC/admin';
+import { updateTeam, updateConf, handleAdmin, initEditEntityPopup } from '../AC/admin';
 import { initTeams } from '../AC/conference';
 import { init } from '../AC/home';
 import {connect} from 'react-redux';
@@ -22,9 +22,13 @@ class Admin extends Component {
 		isLogIn: PropTypes.bool.isRequired,
 		updateConf: PropTypes.func.isRequired,
 		updateTeam: PropTypes.func.isRequired,
+		initEditEntityPopup: PropTypes.func.isRequired
 	};
 
 	componentDidMount() {
+		this.props.initTeams();
+		this.props.init();
+
 		setInterval(() => {
 			this.props.initTeams();
 			this.props.init();
@@ -62,9 +66,9 @@ class Admin extends Component {
 					this.props.updateTeam(newTeams);
 				}
 			} else if (operation === EDIT) {
-
+			// will be soon
 			} else if (operation === ADD) {
-
+				this.props.initEditEntityPopup();
 			}
 		}
 	}
@@ -86,9 +90,9 @@ class Admin extends Component {
 				</td>
 				<td>
 					<ButtonToolbar>
-						<Button onClick={() => this.adminFormHandler(CONF, EDIT, id)} bsStyle="primary">
-							<Glyphicon glyph="edit" />
-						</Button>
+						{/*<Button onClick={() => this.adminFormHandler(CONF, EDIT, id)} bsStyle="primary">*/}
+							{/*<Glyphicon glyph="edit" />*/}
+						{/*</Button>*/}
 						<Button onClick={() => this.adminFormHandler(CONF, DELETE, id)} bsStyle="danger">
 							<Glyphicon glyph="remove" />
 						</Button>
@@ -111,9 +115,9 @@ class Admin extends Component {
 					</td>
 					<td>
 						<ButtonToolbar>
-							<Button onClick={() => this.adminFormHandler(TEAMS, EDIT, id)} bsStyle="primary">
-								<Glyphicon glyph="edit" />
-							</Button>
+							{/*<Button onClick={() => this.adminFormHandler(TEAMS, EDIT, id)} bsStyle="primary">*/}
+								{/*<Glyphicon glyph="edit" />*/}
+							{/*</Button>*/}
 							<Button onClick={() => this.adminFormHandler(TEAMS, DELETE, id)} bsStyle="danger" className={hiddenClass}>
 								<Glyphicon glyph="remove" />
 							</Button>
@@ -141,7 +145,7 @@ class Admin extends Component {
 								<tr key='addConf'>
 									<td colSpan={2}>
 										<Button bsStyle="success">
-											<Glyphicon  onClick={() => this.adminFormHandler(CONF, ADD)} glyph="plus" />
+											<Glyphicon  onClick={() => this.adminFormHandler(CONF, ADD, '')} glyph="plus" />
 										</Button>
 									</td>
 								</tr>
@@ -155,7 +159,7 @@ class Admin extends Component {
 								{this.getTeamsCode()}
 								<tr key='addTeam'>
 									<td colSpan={2}>
-										<Button onClick={() => this.adminFormHandler(TEAMS, ADD)} bsStyle="success">
+										<Button onClick={() => this.adminFormHandler(TEAMS, ADD, '')} bsStyle="success">
 											<Glyphicon glyph="plus" />
 										</Button>
 									</td>
@@ -185,6 +189,7 @@ export default connect(
 		initTeams,
 		updateTeam,
 		updateConf,
-		handleAdmin
+		handleAdmin,
+		initEditEntityPopup
 	}
 )(Admin);

@@ -113,3 +113,7 @@ body,
 .loading > span > .glyphicon {
 	animation: spin 1s linear infinite;
 }
+
+.form-group > div {
+	line-height: 2.4;
+}
