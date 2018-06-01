@@ -34,7 +34,7 @@ class Conference extends Component {
 
 	initC = () => {
 		const today = new Date();
-		const todayKey = today.getFullYear().toString() + '-' + (('0' + (today.getMonth() + 1)).slice(-2)).toString() + '-' + today.getDate().toString();
+		const todayKey = this.props.dateId || today.getFullYear().toString() + '-' + (('0' + (today.getMonth() + 1)).slice(-2)).toString() + '-' + (('0' + today.getDate()).slice(-2)).toString();
 		const currentConfId = this.props.match.params.id;
 
 		this.props.initConference(currentConfId, todayKey);
@@ -103,9 +103,9 @@ class Conference extends Component {
 
 		const today = new Date();
 		const todayF = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-		const pickerDate = new Date(data[0]);
+		const pickerDate = data[0] ? new Date(data[0]) : new Date();
 		const pickeDateF = new Date(pickerDate.getFullYear(), pickerDate.getMonth(), pickerDate.getDate());
-		const pickerKey = data[0].slice(0, 10);
+		const pickerKey = data[0] ? data[0].slice(0, 10) : this.props.dateId;
 		if (pickeDateF < todayF) {
 			this.props.loadConferenceTimetable('less');
 		} else if ((pickeDateF - todayF) / (1000 * 60 *60 * 24) > 90) {
